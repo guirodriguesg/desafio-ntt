@@ -40,5 +40,22 @@ public class TransacaoController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
+    @PostMapping("/saque")
+    private ResponseEntity<TransacaoResponse> realizarSaque(@RequestBody TransacaoRequest transacaoRequest) {
+        log.info("Realizando saque");
+        return transacaoService.realizarSaque(transacaoMapper.toTransacao(transacaoRequest))
+                .map(transacaoMapper::toTransacaoResponse)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
+    }
+
+    @PostMapping("/pagamento")
+    private ResponseEntity<TransacaoResponse> realizarPagamento(@RequestBody TransacaoRequest transacaoRequest) {
+        log.info("Realizando pagamento transferência");
+        return transacaoService.realizarPagamento(transacaoMapper.toTransacao(transacaoRequest))
+                .map(transacaoMapper::toTransacaoResponse)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
+    }
 
 }
