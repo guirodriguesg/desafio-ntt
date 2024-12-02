@@ -71,6 +71,11 @@ public class UsuarioController {
     public Optional<List<UsuarioResponse>> importarListaUsuarios(@RequestParam(name = "fileUsuarios") MultipartFile file){
         return usuarioService.createUsersByExecel(file);
     }
+
+//    @GetMapping("/relatorio-despesas")
+//    public ResponseEntity<?> relatorioDespesas(){
+//        return ResponseEntity.ok(usuarioService.relatorioDespesas());
+//    }
 }
 
 //
