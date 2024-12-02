@@ -8,6 +8,7 @@ import nttdata.bank.domain.entities.transacao.TipoTransacaoFinEnum;
 import nttdata.bank.domain.entities.transacao.Transacao;
 import nttdata.bank.repository.transacao.TransacaoRepository;
 import nttdata.bank.service.adapters.ClienteExternoService;
+import nttdata.bank.service.adapters.ConverteCambioService;
 import nttdata.bank.service.conta.ContaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,15 @@ public class TransacaoService {
 
     private final TransacaoRepository transacaoRepository;
     private final ContaService contaService;
+    private final ConverteCambioService converteCambioService;
     private final ClienteExternoService clienteExternoService;
 
-    public TransacaoService(TransacaoRepository transacaoRepository, ContaService ContaService, ClienteExternoService clienteExternoService) {
+    public TransacaoService(TransacaoRepository transacaoRepository, ContaService ContaService,
+                            ClienteExternoService clienteExternoService, ConverteCambioService converteCambioService) {
         this.transacaoRepository = transacaoRepository;
         this.contaService = ContaService;
         this.clienteExternoService = clienteExternoService;
+        this.converteCambioService = converteCambioService;
     }
 
 
@@ -181,4 +185,7 @@ public class TransacaoService {
     }
 
 
+    public Optional<?> converterCambio(String moedaOrigem, String moedaDestino, BigDecimal valor) {
+        return converteCambioService.converterCambio(moedaOrigem, moedaDestino, valor);
+    }
 }

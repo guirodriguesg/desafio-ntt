@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @CrossOrigin(origins = "*") //ALTERAR PARA ORIGIN PERMITIDO
 @RequestMapping("/api/v1/transacao")
@@ -57,5 +59,12 @@ public class TransacaoController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
+
+    @GetMapping("/converte-cambio")
+    public ResponseEntity<?> converterCambio(@RequestParam String moedaOrigem,
+                                             @RequestParam String moedaDestino, @RequestParam BigDecimal valor) {
+        return ResponseEntity.ok(transacaoService.converterCambio(moedaOrigem, moedaDestino, valor));
+    }
+
 
 }
