@@ -1,4 +1,4 @@
-package nttdata.bank.feign.response;
+package nttdata.bank.feign.response.mockapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
