@@ -2,22 +2,16 @@ package nttdata.bank.service.usuario;
 
 import nttdata.bank.controllers.usuario.requests.UsuarioRequest;
 import nttdata.bank.controllers.usuario.responses.UsuarioResponse;
-import nttdata.bank.domain.entities.usuario.TipoUsuarioEnum;
+import nttdata.bank.domain.dto.usuario.UsuarioDTO;
 import nttdata.bank.domain.entities.usuario.Usuario;
 import nttdata.bank.mappers.usuario.UsuarioMapper;
 import nttdata.bank.repository.usuario.UsuarioRepository;
 import nttdata.bank.service.ExcelFileService;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,10 +83,8 @@ public class UsuarioService {
         }
 
         try {
-            usuarios = importUsersFromExcel(file.getInputStream());
-
-            return Optional.of(usuarios.stream().map(usuarioMapper::toUsuarioResponse).toList());
-//            return Optional.of(usuarioRepository.saveAll(usuarios).stream().map(usuarioMapper::toUsuarioResponse).toList());
+            usuarios = toUsuarioDTO(excelFileService.importUsersFromExcel(file.getInputStream()));
+            return Optional.of(usuarioRepository.saveAll(usuarios).stream().map(usuarioMapper::toUsuarioResponse).toList());
         } catch (Exception e) {
             log.error("Erro ao criar usuarios por excel", e);
             return Optional.empty();
@@ -100,35 +92,10 @@ public class UsuarioService {
     }
 
     //MIGRAR
-    public List<Usuario> importUsersFromExcel(InputStream fileInputStream) {
-        List<Usuario> usuarios = new ArrayList<>();
 
-        try (Workbook workbook = new XSSFWorkbook(fileInputStream)) {
-            Sheet sheet = workbook.getSheetAt(0); // Seleciona a primeira aba
-
-            // Itera sobre as linhas da planilha
-            for (Row row : sheet) {
-                // Ignora a primeira linha, que pode ser o cabeçalho
-                if (row.getRowNum() == 0) {
-                    continue;
-                }
-
-                Usuario usuario = new Usuario();
-                usuario.setNome(row.getCell(0).getStringCellValue()); // Nome na primeira coluna
-                usuario.setLogin(row.getCell(1).getStringCellValue()); // Idade na segunda coluna
-                usuario.setSenha(row.getCell(2).getStringCellValue()); // Email na terceira coluna
-                usuario.setTipoUsuario(TipoUsuarioEnum.valueOf(row.getCell(3).getStringCellValue()));
-                usuario.setEmail(row.getCell(4).getStringCellValue()); // Email na terceira coluna
-                usuarios.add(usuario);
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); // Em um sistema real, você deve tratar exceções de forma mais robusta
-        }
-
-        return usuarios;
-    }
-
-
+//
+//    public Object relatorioDespesas() {
+//    }
 
     //MIGRAR
     public Usuario toUsuarioEntity(UsuarioRequest usuarioRequest) {
@@ -136,6 +103,10 @@ public class UsuarioService {
     }
     public UsuarioResponse toUsuarioResponse(Usuario usuario) {
         return usuarioMapper.toUsuarioResponse(usuario);
+    }
+
+    public List<Usuario> toUsuarioDTO(List<UsuarioDTO> usuarioDTOs) {
+        return usuarioMapper.toUsuarios(usuarioDTOs);
     }
 
 }
