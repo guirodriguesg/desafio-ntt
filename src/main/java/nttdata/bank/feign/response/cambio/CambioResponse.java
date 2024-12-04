@@ -17,7 +17,15 @@ public class CambioResponse {
     @JsonProperty("rates")
     private Map<String, BigDecimal> cotacoes;
 
+    private String msgResponse;
     private BigDecimal valorConvertido;
+
+    public CambioResponse() {
+    }
+
+    public CambioResponse(String msgResponse){
+        this.msgResponse = msgResponse;
+    }
 
     public boolean isStatusRequisicao() {
         return statusRequisicao;
@@ -57,5 +65,17 @@ public class CambioResponse {
 
     public void setValorConvertido(BigDecimal valorConvertido) {
         this.valorConvertido = valorConvertido;
+    }
+
+    public String getMsgResponse() {
+        return msgResponse;
+    }
+
+    public void setMsgResponse(String msgResponse) {
+        this.msgResponse = msgResponse;
+    }
+
+    public BigDecimal getCotacaoMoeda(String moeda){
+        return this.cotacoes.isEmpty() ? BigDecimal.ZERO : cotacoes.get(moeda);
     }
 }
