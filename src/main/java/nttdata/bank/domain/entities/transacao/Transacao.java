@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import nttdata.bank.domain.entities.conta.Conta;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity

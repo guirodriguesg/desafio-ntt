@@ -2,7 +2,6 @@ package nttdata.bank.service;
 
 import nttdata.bank.domain.dto.usuario.UsuarioDTO;
 import nttdata.bank.domain.entities.usuario.TipoUsuarioEnum;
-import nttdata.bank.domain.entities.usuario.Usuario;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
