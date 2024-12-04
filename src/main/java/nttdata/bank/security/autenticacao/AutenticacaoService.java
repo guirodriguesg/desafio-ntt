@@ -4,7 +4,6 @@ import nttdata.bank.domain.entities.usuario.Usuario;
 import nttdata.bank.repository.usuario.UsuarioRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,10 +27,9 @@ public class AutenticacaoService implements UserDetailsService {
         log.info("Iniciando autenticacao do usuario");
         Optional<Usuario> usuario = usuarioRepository.findByLogin(username);
         if (usuario.isPresent()) {
-            return new User(usuario.get().getLogin(), usuario.get().getSenha(), usuario.get().getAuthorities());
+            return usuario.get();
         }
         log.warn("Usuario nao encontrado");
-
-        return null;
+        throw new UsernameNotFoundException("Usuario nao encontrado");
     }
 }

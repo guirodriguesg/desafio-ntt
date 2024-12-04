@@ -1,6 +1,5 @@
 package nttdata.bank.service.transacao;
 
-import aj.org.objectweb.asm.commons.Remapper;
 import nttdata.bank.domain.entities.conta.Conta;
 import nttdata.bank.domain.entities.transacao.StatusTransacaoEnum;
 import nttdata.bank.domain.entities.transacao.TipoDespesaEnum;
