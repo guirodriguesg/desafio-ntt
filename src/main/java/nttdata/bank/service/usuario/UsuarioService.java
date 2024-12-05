@@ -9,6 +9,7 @@ import nttdata.bank.repository.usuario.UsuarioRepository;
 import nttdata.bank.service.ExcelFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,11 +24,13 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
     private final ExcelFileService excelFileService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, ExcelFileService excelFileService) {
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, ExcelFileService excelFileService, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.excelFileService = excelFileService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Optional<List<UsuarioResponse>> getAllUsers() {
@@ -42,7 +45,10 @@ public class UsuarioService {
 
     public UsuarioResponse createUser(UsuarioRequest usuarioRequest) {
         log.info("Creating user");
-        return toUsuarioResponse(usuarioRepository.save(toUsuarioEntity(usuarioRequest)));
+        //Validar se conta/agencia e login ja existem
+        Usuario usuario = toUsuarioEntity(usuarioRequest);
+        usuario.setSenha(passwordEncoder.encode(usuarioRequest.getSenha()));
+        return toUsuarioResponse(usuarioRepository.save(usuario));
     }
 
     public UsuarioResponse updateUser(Long idUsuario, UsuarioRequest usuarioRequest) {
@@ -56,7 +62,6 @@ public class UsuarioService {
         Usuario usuario = usuarioOptional.get();
         usuario.setNome(usuarioRequest.getNome());
         usuario.setLogin(usuarioRequest.getLogin());
-        usuario.setSenha(usuarioRequest.getSenha());
         usuario.setEmail(usuarioRequest.getEmail());
         usuario.setTipoUsuario(usuarioRequest.getTipoUsuario());
 
@@ -109,4 +114,5 @@ public class UsuarioService {
         return usuarioMapper.toUsuarios(usuarioDTOs);
     }
 
+    //TODO: CRIAR METODO PARA ALTERAR SENHA
 }

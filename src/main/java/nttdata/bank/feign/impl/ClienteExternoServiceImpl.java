@@ -2,7 +2,7 @@ package nttdata.bank.feign.impl;
 
 import nttdata.bank.feign.clients.ContaExternaClient;
 import nttdata.bank.feign.response.mockapi.ClienteExterno;
-import nttdata.bank.service.adapters.ClienteExternoService;
+import nttdata.bank.service.ports.ClienteExternoService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

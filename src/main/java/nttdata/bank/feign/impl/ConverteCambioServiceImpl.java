@@ -3,7 +3,7 @@ package nttdata.bank.feign.impl;
 import nttdata.bank.exceptions.cambio.CambioBusinessException;
 import nttdata.bank.feign.clients.ConverteCambioClient;
 import nttdata.bank.feign.response.cambio.CambioResponse;
-import nttdata.bank.service.adapters.ConverteCambioService;
+import nttdata.bank.service.ports.ConverteCambioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

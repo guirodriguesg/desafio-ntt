@@ -1,4 +1,4 @@
-package nttdata.bank.service.adapters;
+package nttdata.bank.service.ports;
 
 import org.springframework.stereotype.Service;
 
