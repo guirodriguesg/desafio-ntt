@@ -1,6 +1,7 @@
 package nttdata.bank.controllers.usuario;
 
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import nttdata.bank.controllers.usuario.requests.UsuarioRequest;
 import nttdata.bank.controllers.usuario.responses.UsuarioResponse;
 import nttdata.bank.mappers.usuario.UsuarioMapper;
@@ -17,6 +18,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin(origins = "*") //ALTERAR PARA ORIGIN PERMITIDO
 @RequestMapping("/api/v1/usuario")
+@SecurityRequirement(name = "bearer-key")
 public class UsuarioController {
 
     private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);

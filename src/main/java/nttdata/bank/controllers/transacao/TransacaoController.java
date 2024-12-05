@@ -1,5 +1,7 @@
 package nttdata.bank.controllers.transacao;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import nttdata.bank.controllers.transacao.requests.TransacaoRequest;
 import nttdata.bank.controllers.transacao.responses.TransacaoResponse;
 import nttdata.bank.mappers.transacao.TransacaoMapper;
@@ -14,6 +16,7 @@ import java.math.BigDecimal;
 @RestController
 @CrossOrigin(origins = "*") //ALTERAR PARA ORIGIN PERMITIDO
 @RequestMapping("/api/v1/transacao")
+@SecurityRequirement(name = "bearer-key")
 public class TransacaoController {
 
     private static final Logger log = LoggerFactory.getLogger(TransacaoController.class);
