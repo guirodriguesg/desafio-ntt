@@ -23,5 +23,5 @@ public interface ConverteCambioClient {
     Optional<CambioResponse> getTodasCotacoes();
 
     @GetMapping("latest")
-    Optional<ClienteExterno> getContaClieneExterno(@RequestParam("base") String moedaBase, @RequestParam("symbols") String... moedasRetorno);
+    Optional<ClienteExterno> getCotacoesPorMoedaBase(@RequestParam("base") String moedaBase, @RequestParam("symbols") String... moedasRetorno);
 }

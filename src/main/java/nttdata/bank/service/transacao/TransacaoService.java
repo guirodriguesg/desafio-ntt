@@ -6,9 +6,8 @@ import nttdata.bank.domain.entities.transacao.TipoDespesaEnum;
 import nttdata.bank.domain.entities.transacao.TipoTransacaoFinEnum;
 import nttdata.bank.domain.entities.transacao.Transacao;
 import nttdata.bank.repository.transacao.TransacaoRepository;
-import nttdata.bank.service.ports.ClienteExternoService;
-import nttdata.bank.service.ports.ConverteCambioService;
 import nttdata.bank.service.conta.ContaService;
+import nttdata.bank.service.ports.ConverteCambioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,17 +22,16 @@ public class TransacaoService {
     private static final Logger log = LoggerFactory.getLogger(TransacaoService.class);
 
     private static final String MSG_CONTA_NAO_ENCONTRADA = "Conta com id {} não encontrada";
+    private static final String MOEDA_BRL = "BRL";
+    private static final String MOEDA_USA = "USD";
 
     private final TransacaoRepository transacaoRepository;
     private final ContaService contaService;
     private final ConverteCambioService converteCambioService;
-    private final ClienteExternoService clienteExternoService;
 
-    public TransacaoService(TransacaoRepository transacaoRepository, ContaService ContaService,
-                            ClienteExternoService clienteExternoService, ConverteCambioService converteCambioService) {
+    public TransacaoService(TransacaoRepository transacaoRepository, ContaService ContaService, ConverteCambioService converteCambioService) {
         this.transacaoRepository = transacaoRepository;
         this.contaService = ContaService;
-        this.clienteExternoService = clienteExternoService;
         this.converteCambioService = converteCambioService;
     }
 
@@ -41,31 +39,23 @@ public class TransacaoService {
     public Optional<Transacao> realizarDeposito(Transacao transacao) {
         log.info("Realizando depósito");
         Optional<Conta> conta = buscarContaPorId(transacao.getIdContaOrigem());
-        if (contaNaoExiste(conta)) {
-            logContaNaoEncontrada(transacao.getIdContaOrigem());
-            return Optional.empty();
-        }
+        verificarSeContaExite(conta);
         executarDeposito(conta.get(), transacao);
         return Optional.of(transacaoRepository.save(transacao));
     }
 
     private void executarDeposito(Conta conta, Transacao transacao) {
         conta.setSaldo(conta.getSaldo().add(transacao.getValorTransacao()));
-        preencherTransacaoDespositoConcluida(conta, transacao);
+        BigDecimal cotacao = (BigDecimal) buscarTaxaCambio(MOEDA_BRL).get();
+        preencherTransacaoDespositoConcluida(conta, transacao, cotacao);
     }
 
     public Optional<Transacao> realizarSaque(Transacao transacao) {
         log.info("Realizando saque");
         Optional<Conta> conta = buscarContaPorId(transacao.getIdContaOrigem());
-        if (contaNaoExiste(conta)) {
-            logContaNaoEncontrada(transacao.getIdContaOrigem());
-            return Optional.empty();
-        }
+        verificarSeContaExite(conta);
 
-        if (validarSaldoCliente(transacao.getValorTransacao(), conta.get().getSaldo())) {
-            log.warn("Saldo insuficiente");
-            return Optional.empty();
-        }
+        verificarSeSaldoSuficiente(transacao, conta.get());
 
         executarSaque(conta.get(), transacao);
         return Optional.of(transacaoRepository.save(transacao));
@@ -73,27 +63,19 @@ public class TransacaoService {
 
     private void executarSaque(Conta conta, Transacao transacao) {
         conta.setSaldo(conta.getSaldo().subtract(transacao.getValorTransacao()));
-        preencherTransacaoSaqueConcluido(conta, transacao);
+        BigDecimal cotacao = (BigDecimal) buscarTaxaCambio(MOEDA_BRL).get();
+        preencherTransacaoSaqueConcluido(conta, transacao, cotacao);
     }
 
     public Optional<Transacao> realizarTransferencia(Transacao transacao) {
         log.info("Realizando transferencia da conta com id: {}", transacao.getIdContaOrigem());
         Optional<Conta> contaOrigem = buscarContaPorId(transacao.getIdContaOrigem());
-        if (contaNaoExiste(contaOrigem)) {
-            logContaNaoEncontrada(transacao.getContaOrigem().getId());
-            return Optional.empty();
-        }
+        verificarSeContaExite(contaOrigem);
 
-        if (validarSaldoCliente(transacao.getValorTransacao(), contaOrigem.get().getSaldo())) {
-            log.warn("Saldo insuficiente");
-            return Optional.empty();
-        }
+        verificarSeSaldoSuficiente(transacao, contaOrigem.get());
 
         Optional<Conta> contaDestino = buscarContaPorId(transacao.getIdContaDestino());
-        if (contaNaoExiste(contaDestino)) {
-            logContaNaoEncontrada(transacao.getContaDestino().getId());
-            return Optional.empty();
-        }
+        verificarSeContaExite(contaOrigem);
 
         try {
             executarTransferencia(contaOrigem.get(), contaDestino.get(), transacao);
@@ -108,14 +90,9 @@ public class TransacaoService {
     public Optional<Transacao> realizarPagamento(Transacao transacao) {
         log.info("Realizando pagamento");
         Optional<Conta> contaOrigem = buscarContaPorId(transacao.getIdContaOrigem());
-        if (contaNaoExiste(contaOrigem)) {
-            logContaNaoEncontrada(transacao.getContaOrigem().getId());
-            return Optional.empty();
-        }
-        if (validarSaldoCliente(transacao.getValorTransacao(), contaOrigem.get().getSaldo())) {
-            log.warn("Saldo insuficiente");
-            return Optional.empty();
-        }
+        verificarSeContaExite(contaOrigem);
+
+        verificarSeSaldoSuficiente(transacao, contaOrigem.get());
 
         executarPagamento(contaOrigem.get(), transacao);
         return Optional.of(transacaoRepository.save(transacao));
@@ -123,56 +100,66 @@ public class TransacaoService {
 
     private void executarPagamento(Conta conta, Transacao transacao) {
         conta.setSaldo(conta.getSaldo().subtract(transacao.getValorTransacao()));
-        preencherTransacaoSaqueConcluido(conta, transacao);
+        BigDecimal cotacao = (BigDecimal) buscarTaxaCambio(MOEDA_BRL).get();
+        preencherTransacaoSaqueConcluido(conta, transacao, cotacao);
     }
 
-    private boolean validarSaldoCliente(BigDecimal valorTransacao, BigDecimal saldoClienteConta) {
-        return saldoClienteConta.compareTo(valorTransacao) < 0;
-    }
 
     private void executarTransferencia(Conta origem, Conta destino, Transacao transacao) {
         origem.setSaldo(origem.getSaldo().subtract(transacao.getValorTransacao()));
         destino.setSaldo(destino.getSaldo().add(transacao.getValorTransacao()));
-        preencherTransacaoTransferenciaConcluida(origem, destino, transacao);
+        BigDecimal cotacao = (BigDecimal) buscarTaxaCambio(MOEDA_BRL).get();
+        preencherTransacaoTransferenciaConcluida(origem, destino, transacao, cotacao);
     }
 
     private Optional<Conta> buscarContaPorId(Long id) {
         return contaService.buscarContaPorId(id);
     }
 
-    private boolean contaNaoExiste(Optional<Conta> conta) {
-        return conta.isEmpty();
+    public Optional<?> converterCambio(String moedaOrigem, String moedaDestino, BigDecimal valor) {
+        return converteCambioService.converterCambio(moedaOrigem, moedaDestino, valor);
     }
 
-    private void logContaNaoEncontrada(Long id) {
-        log.warn(MSG_CONTA_NAO_ENCONTRADA, id);
+    public Optional<?> buscarTaxaCambio(String moedaOrigem) {
+        return converteCambioService.buscarTaxaCambio(moedaOrigem);
+    }
+
+    private void verificarSeSaldoSuficiente(Transacao transacao, Conta conta) {
+        transacao.saldoEhInsuficiente(conta.getSaldo());
+    }
+
+    private void verificarSeContaExite(Optional<Conta> conta) {
+        contaService.contaNaoExiste(conta);
     }
 
     //MOVER PARA CONSTRUTOR
-    private void preencherTransacaoTransferenciaConcluida(Conta origem, Conta destino, Transacao transacao) {
+    private void preencherTransacaoTransferenciaConcluida(Conta origem, Conta destino, Transacao transacao, BigDecimal cotacao) {
         transacao.setContaOrigem(origem);
         transacao.setContaDestino(destino);
         transacao.setStatusTransacao(StatusTransacaoEnum.CONCLUIDA);
         transacao.setTipoTransacaoFinanceira(TipoTransacaoFinEnum.TRANSFERENCIA);
         transacao.setDataTransacao(LocalDateTime.now());
         transacao.setTipoDespesa(TipoDespesaEnum.OUTROS);
+        transacao.setTaxaCambio(cotacao);
     }
 
     //MOVER PARA CONSTRUTOR
-    private void preencherTransacaoSaqueConcluido(Conta origem, Transacao transacao) {
+    private void preencherTransacaoSaqueConcluido(Conta origem, Transacao transacao, BigDecimal cotacao) {
         transacao.setContaOrigem(origem);
         transacao.setStatusTransacao(StatusTransacaoEnum.CONCLUIDA);
         transacao.setTipoTransacaoFinanceira(TipoTransacaoFinEnum.RETIRADA);
         transacao.setDataTransacao(LocalDateTime.now());
         transacao.setTipoDespesa(TipoDespesaEnum.OUTROS);
+        transacao.setTaxaCambio(cotacao);
     }
 
     //MOVER PARA CONSTRUTOR
-    private void preencherTransacaoDespositoConcluida(Conta origem, Transacao transacao) {
+    private void preencherTransacaoDespositoConcluida(Conta origem, Transacao transacao, BigDecimal cotacao) {
         transacao.setContaOrigem(origem);
         transacao.setStatusTransacao(StatusTransacaoEnum.CONCLUIDA);
         transacao.setTipoTransacaoFinanceira(TipoTransacaoFinEnum.DEPOSITO);
         transacao.setDataTransacao(LocalDateTime.now());
+        transacao.setTaxaCambio(cotacao);
     }
 
     //MOVER PARA CONSTRUTOR
@@ -181,10 +168,5 @@ public class TransacaoService {
         transacao.setStatusTransacao(StatusTransacaoEnum.PENDENTE);
         transacao.setTipoTransacaoFinanceira(TipoTransacaoFinEnum.DEPOSITO);
         transacao.setDataTransacao(LocalDateTime.now());
-    }
-
-
-    public Optional<?> converterCambio(String moedaOrigem, String moedaDestino, BigDecimal valor) {
-        return converteCambioService.converterCambio(moedaOrigem, moedaDestino, valor);
     }
 }
