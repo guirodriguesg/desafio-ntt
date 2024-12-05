@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -58,6 +59,11 @@ public class ContaController {
     private void deletarConta(@PathVariable(value = "id") Long idConta) {
         log.info("Deletando conta");
         contaService.deleteConta(idConta);
+    }
+
+    @GetMapping("/saldo-externo/{id}")
+    private ResponseEntity<BigDecimal> buscarSaldoAtualbyMockApi(@PathVariable(name = "id") String moedaOrigem) {
+        return ResponseEntity.ok(contaService.saldoAtualbyMockApi(moedaOrigem));
     }
 
 }

@@ -5,14 +5,13 @@ import nttdata.bank.domain.entities.transacao.StatusTransacaoEnum;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class TransacaoResponse {
 
     @JsonProperty("id_transacao")
     private Long id;
 
-    private BigDecimal taxaCambio;// buscar da api na hora do response
+    private BigDecimal taxaCambio;
     private LocalDateTime dataTransacao;
     private StatusTransacaoEnum statusTransacao;
 
@@ -33,7 +32,7 @@ public class TransacaoResponse {
     }
 
     public BigDecimal getTaxaCambio() {
-        return Objects.isNull(taxaCambio) ? BigDecimal.valueOf(5.94) : taxaCambio;
+        return taxaCambio;
     }
 
     public void setTaxaCambio(BigDecimal taxaCambio) {

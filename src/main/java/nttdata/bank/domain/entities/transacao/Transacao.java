@@ -122,4 +122,11 @@ public class Transacao {
     public void setStatusTransacao(StatusTransacaoEnum statusTransacao) {
         this.statusTransacao = statusTransacao;
     }
+
+    public boolean saldoEhInsuficiente(BigDecimal saldoClienteConta) {
+        if(saldoClienteConta != null && saldoClienteConta.compareTo(valorTransacao) < 0){
+            throw new RuntimeException("Saldo insuficiente");
+        }
+        return false;
+    }
 }

@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ClienteExternoService {
 
     Optional<?> buscarClienteExterno();
+
+    Optional<?> buscarSaldoClienteExterno(String idCliente);
 }

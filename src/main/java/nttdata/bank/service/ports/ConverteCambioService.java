@@ -8,5 +8,7 @@ import java.util.Optional;
 @Service
 public interface ConverteCambioService {
 
+    Optional<?> buscarTaxaCambio(String moedaOrigem);
+
     Optional<?> converterCambio(String moedaOrigem, String moedaDestino, BigDecimal valor);
 }

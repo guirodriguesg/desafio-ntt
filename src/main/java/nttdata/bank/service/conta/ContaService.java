@@ -4,13 +4,17 @@ import nttdata.bank.controllers.conta.requests.ContaRequest;
 import nttdata.bank.controllers.conta.responses.ContaResponse;
 import nttdata.bank.domain.entities.conta.Conta;
 import nttdata.bank.domain.entities.usuario.Usuario;
+import nttdata.bank.feign.response.mockapi.ClienteExterno;
 import nttdata.bank.mappers.conta.ContaMapper;
 import nttdata.bank.repository.conta.ContaRepository;
+import nttdata.bank.service.ports.ClienteExternoService;
 import nttdata.bank.service.usuario.UsuarioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,11 +26,13 @@ public class ContaService {
 
     private final ContaRepository contaRepository;
     private final UsuarioService usuarioService;
+    private final ClienteExternoService clienteExternoService;
     private final ContaMapper contaMapper;
 
-    public ContaService(ContaRepository contaRepository, UsuarioService usuarioService, ContaMapper contaMapper) {
+    public ContaService(ContaRepository contaRepository, UsuarioService usuarioService, ClienteExternoService clienteExternoService, ContaMapper contaMapper) {
         this.contaRepository = contaRepository;
         this.usuarioService = usuarioService;
+        this.clienteExternoService = clienteExternoService;
         this.contaMapper = contaMapper;
     }
 
@@ -89,5 +95,27 @@ public class ContaService {
     public boolean validarConta(Long idConta) {
         log.info("Validando conta");
         return contaRepository.existsById(idConta);
+    }
+
+    public boolean contaNaoExiste(Optional<Conta> conta) {
+        if (conta.isEmpty()) {
+            throw new RuntimeException("Conta não encontrada");
+        }
+        return true;
+    }
+
+    public BigDecimal saldoAtualbyMockApi(String id) {
+        log.info("Buscando saldo atual cliente externo com id {}", id);
+        if (id == null) {
+            log.warn("Id do cliente externo não pode ser nulo");
+            throw new RuntimeException("Id do cliente externo não pode ser nulo");
+        }
+        BigDecimal saldo = (BigDecimal) clienteExternoService.buscarSaldoClienteExterno(id).orElse(null);
+        if (saldo == null) {
+            log.warn("Saldo não encontrado para o cliente {}", id);
+            throw new RuntimeException("Saldo não encontrado");
+        }
+
+        return saldo.setScale(2, RoundingMode.HALF_UP);
     }
 }
