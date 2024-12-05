@@ -37,21 +37,15 @@ public class JwtTokenService {
         }
     }
 
-    public boolean verificarToken(String token){
-        DecodedJWT decodedJWT;
+    public String getSubjectToken(String token){
         try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);;
-            JWTVerifier verifier = JWT.require(algorithm)
-                    // specify any specific claim validations
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return  JWT.require(algorithm)
                     .withIssuer("NTT BANK SERVICE")
-                    // reusable verifier instance
-                    .build();
-
-            decodedJWT = verifier.verify(token);
+                    .build().verify(token).getSubject();
         } catch (JWTVerificationException exception){
             throw new RuntimeException("Token inválido", exception);
         }
-        return false;
     }
 
     private Instant getDataExpiracao() {
