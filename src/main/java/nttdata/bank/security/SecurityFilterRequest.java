@@ -32,7 +32,7 @@ public class SecurityFilterRequest extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(isLoginRequest(request)){
+        if(isLoginRequest(request) || isSwaggerRequest(request)){
             filterChain.doFilter(request, response);
             return;
         }
@@ -53,6 +53,10 @@ public class SecurityFilterRequest extends OncePerRequestFilter {
 
     private static boolean isLoginRequest(HttpServletRequest request) {
         return (request.getRequestURI().equals("/api/v1/autenticacao") && request.getMethod().equals("POST"));
+    }
+
+    private static boolean isSwaggerRequest(HttpServletRequest request) {
+        return (request.getRequestURI().contains("swagger") || request.getRequestURI().contains("v3/api-docs"));
     }
 
     private String getTokenFromHeader(HttpServletRequest request){

@@ -1,5 +1,6 @@
 package nttdata.bank.controllers.conta;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import nttdata.bank.controllers.conta.requests.ContaRequest;
 import nttdata.bank.controllers.conta.responses.ContaResponse;
 import nttdata.bank.mappers.conta.ContaMapper;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @CrossOrigin(origins = "*") //ALTERAR PARA ORIGIN PERMITIDO
 @RequestMapping("/api/v1/conta")
+@SecurityRequirement(name = "bearer-key")
 public class ContaController {
 
     private static final Logger log = LoggerFactory.getLogger(ContaController.class);

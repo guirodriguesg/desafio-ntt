@@ -22,6 +22,7 @@ public class SecurityConfig {
     private static final String URI_USUARIO = "/api/v1/usuario";
     private static final String URI_AUTENTICACAO = "/api/v1/conta";
     private static final String ADMIN = "ADMINISTRADOR";
+    private static final String[] URIS_SWAGGER = {"/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**"};
 
     private final SecurityFilterRequest securityFilterRequest;
 
@@ -34,7 +35,8 @@ public class SecurityConfig {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
-                    req.requestMatchers(URI_AUTENTICACAO).permitAll();
+                    req.requestMatchers(HttpMethod.POST, URI_AUTENTICACAO).permitAll();
+                    req.requestMatchers(URIS_SWAGGER).permitAll();
                     req.requestMatchers(HttpMethod.PUT, URI_CONTA).hasRole(ADMIN);
                     req.requestMatchers(HttpMethod.DELETE, URI_CONTA).hasRole(ADMIN);
                     req.requestMatchers(HttpMethod.PUT, URI_USUARIO).hasRole(ADMIN);
