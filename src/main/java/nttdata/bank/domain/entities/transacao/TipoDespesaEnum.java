@@ -15,4 +15,8 @@ public enum TipoDespesaEnum {
     TipoDespesaEnum(String descricao) {
         this.descricao = descricao;
     }
+
+    public String getDescricao() {
+        return descricao;
+    }
 }
