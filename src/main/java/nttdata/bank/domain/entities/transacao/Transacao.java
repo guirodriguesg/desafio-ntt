@@ -14,10 +14,10 @@ public class Transacao {
     @Column(name = "ID_TRANSACAO")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "ID_CONTA_ORIGEM", referencedColumnName = "ID_CONTA")
     private Conta contaOrigem;//deposito e retirada
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne
     @JoinColumn(name = "ID_CONTA_DESTINO", referencedColumnName = "ID_CONTA")
     private Conta contaDestino; //transferencia
     @Column(name = "TIPO_TRANSACAO_FIN")

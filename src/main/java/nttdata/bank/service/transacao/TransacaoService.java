@@ -1,19 +1,25 @@
 package nttdata.bank.service.transacao;
 
+import com.itextpdf.layout.Document;
+import nttdata.bank.domain.dto.transacao.TransacaoDTO;
 import nttdata.bank.domain.entities.conta.Conta;
 import nttdata.bank.domain.entities.transacao.StatusTransacaoEnum;
 import nttdata.bank.domain.entities.transacao.TipoDespesaEnum;
 import nttdata.bank.domain.entities.transacao.TipoTransacaoFinEnum;
 import nttdata.bank.domain.entities.transacao.Transacao;
 import nttdata.bank.repository.transacao.TransacaoRepository;
+import nttdata.bank.service.PdfFileService;
 import nttdata.bank.service.conta.ContaService;
 import nttdata.bank.service.ports.ConverteCambioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,18 +27,18 @@ public class TransacaoService {
 
     private static final Logger log = LoggerFactory.getLogger(TransacaoService.class);
 
-    private static final String MSG_CONTA_NAO_ENCONTRADA = "Conta com id {} não encontrada";
     private static final String MOEDA_BRL = "BRL";
-    private static final String MOEDA_USA = "USD";
 
     private final TransacaoRepository transacaoRepository;
     private final ContaService contaService;
     private final ConverteCambioService converteCambioService;
+    private final PdfFileService pdfFileService;
 
-    public TransacaoService(TransacaoRepository transacaoRepository, ContaService ContaService, ConverteCambioService converteCambioService) {
+    public TransacaoService(TransacaoRepository transacaoRepository, ContaService ContaService, ConverteCambioService converteCambioService, PdfFileService pdfFileService) {
         this.transacaoRepository = transacaoRepository;
         this.contaService = ContaService;
         this.converteCambioService = converteCambioService;
+        this.pdfFileService = pdfFileService;
     }
 
 
@@ -46,6 +52,7 @@ public class TransacaoService {
 
     private void executarDeposito(Conta conta, Transacao transacao) {
         conta.setSaldo(conta.getSaldo().add(transacao.getValorTransacao()));
+        conta = contaService.salvar(conta);
         BigDecimal cotacao = (BigDecimal) buscarTaxaCambio(MOEDA_BRL).get();
         preencherTransacaoDespositoConcluida(conta, transacao, cotacao);
     }
@@ -64,6 +71,7 @@ public class TransacaoService {
     private void executarSaque(Conta conta, Transacao transacao) {
         conta.setSaldo(conta.getSaldo().subtract(transacao.getValorTransacao()));
         BigDecimal cotacao = (BigDecimal) buscarTaxaCambio(MOEDA_BRL).get();
+        conta = contaService.salvar(conta);
         preencherTransacaoSaqueConcluido(conta, transacao, cotacao);
     }
 
@@ -75,7 +83,7 @@ public class TransacaoService {
         verificarSeSaldoSuficiente(transacao, contaOrigem.get());
 
         Optional<Conta> contaDestino = buscarContaPorId(transacao.getIdContaDestino());
-        verificarSeContaExite(contaOrigem);
+        verificarSeContaExite(contaDestino);
 
         try {
             executarTransferencia(contaOrigem.get(), contaDestino.get(), transacao);
@@ -101,6 +109,7 @@ public class TransacaoService {
     private void executarPagamento(Conta conta, Transacao transacao) {
         conta.setSaldo(conta.getSaldo().subtract(transacao.getValorTransacao()));
         BigDecimal cotacao = (BigDecimal) buscarTaxaCambio(MOEDA_BRL).get();
+        conta = contaService.salvar(conta);
         preencherTransacaoSaqueConcluido(conta, transacao, cotacao);
     }
 
@@ -109,6 +118,8 @@ public class TransacaoService {
         origem.setSaldo(origem.getSaldo().subtract(transacao.getValorTransacao()));
         destino.setSaldo(destino.getSaldo().add(transacao.getValorTransacao()));
         BigDecimal cotacao = (BigDecimal) buscarTaxaCambio(MOEDA_BRL).get();
+        origem = contaService.salvar(origem);
+        destino = contaService.salvar(destino);
         preencherTransacaoTransferenciaConcluida(origem, destino, transacao, cotacao);
     }
 
@@ -145,12 +156,7 @@ public class TransacaoService {
 
     //MOVER PARA CONSTRUTOR
     private void preencherTransacaoSaqueConcluido(Conta origem, Transacao transacao, BigDecimal cotacao) {
-        transacao.setContaOrigem(origem);
-        transacao.setStatusTransacao(StatusTransacaoEnum.CONCLUIDA);
-        transacao.setTipoTransacaoFinanceira(TipoTransacaoFinEnum.RETIRADA);
-        transacao.setDataTransacao(LocalDateTime.now());
-        transacao.setTipoDespesa(TipoDespesaEnum.OUTROS);
-        transacao.setTaxaCambio(cotacao);
+
     }
 
     //MOVER PARA CONSTRUTOR
@@ -168,5 +174,19 @@ public class TransacaoService {
         transacao.setStatusTransacao(StatusTransacaoEnum.PENDENTE);
         transacao.setTipoTransacaoFinanceira(TipoTransacaoFinEnum.DEPOSITO);
         transacao.setDataTransacao(LocalDateTime.now());
+    }
+
+    public Optional<List<Transacao>> getTransacoesClientePorIdCliente(Long idCliente) {
+    log.info("Buscando transacoes do cliente com id: {}", idCliente);
+    return transacaoRepository.findByIdClienteContaOrigem(idCliente);
+    }
+
+    public void gerarRelatorioTransacao(List<TransacaoDTO> transacaoDTOList, OutputStream outputStream) {
+        try {
+            log.info("Gerando relatório de transações");
+            pdfFileService.gerarRelatorioTransacaoPdf(transacaoDTOList, outputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

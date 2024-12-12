@@ -118,4 +118,9 @@ public class ContaService {
 
         return saldo.setScale(2, RoundingMode.HALF_UP);
     }
+
+    public Conta salvar(Conta conta) {
+        log.info("Salvando conta");
+        return contaRepository.save(conta);
+    }
 }
