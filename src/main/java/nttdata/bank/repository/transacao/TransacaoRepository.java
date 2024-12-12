@@ -13,5 +13,5 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 
 
     @Query("SELECT t FROM Transacao t WHERE t.contaOrigem.usuario.id = :idClienteContaOrigem")
-    Optional<List<Transacao>> findByIdClienteContaOrigem(Long idClienteContaOrigem);;
+    Optional<List<Transacao>> findByIdClienteContaOrigem(Long idClienteContaOrigem);
 }

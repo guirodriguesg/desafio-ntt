@@ -1,6 +1,5 @@
 package nttdata.bank.service.transacao;
 
-import com.itextpdf.layout.Document;
 import nttdata.bank.domain.dto.transacao.TransacaoDTO;
 import nttdata.bank.domain.entities.conta.Conta;
 import nttdata.bank.domain.entities.transacao.StatusTransacaoEnum;
@@ -8,19 +7,22 @@ import nttdata.bank.domain.entities.transacao.TipoDespesaEnum;
 import nttdata.bank.domain.entities.transacao.TipoTransacaoFinEnum;
 import nttdata.bank.domain.entities.transacao.Transacao;
 import nttdata.bank.repository.transacao.TransacaoRepository;
-import nttdata.bank.service.PdfFileService;
+import nttdata.bank.service.GraficoService;
 import nttdata.bank.service.conta.ContaService;
 import nttdata.bank.service.ports.ConverteCambioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TransacaoService {
@@ -32,13 +34,15 @@ public class TransacaoService {
     private final TransacaoRepository transacaoRepository;
     private final ContaService contaService;
     private final ConverteCambioService converteCambioService;
-    private final PdfFileService pdfFileService;
+    private final RelatorioTransacaoService relatorioTransacaoService;
+    private final GraficoService graficoService;
 
-    public TransacaoService(TransacaoRepository transacaoRepository, ContaService ContaService, ConverteCambioService converteCambioService, PdfFileService pdfFileService) {
+    public TransacaoService(TransacaoRepository transacaoRepository, ContaService ContaService, ConverteCambioService converteCambioService, RelatorioTransacaoService relatorioTransacaoService, GraficoService graficoService) {
         this.transacaoRepository = transacaoRepository;
         this.contaService = ContaService;
         this.converteCambioService = converteCambioService;
-        this.pdfFileService = pdfFileService;
+        this.relatorioTransacaoService = relatorioTransacaoService;
+        this.graficoService = graficoService;
     }
 
 
@@ -184,9 +188,25 @@ public class TransacaoService {
     public void gerarRelatorioTransacao(List<TransacaoDTO> transacaoDTOList, OutputStream outputStream) {
         try {
             log.info("Gerando relatório de transações");
-            pdfFileService.gerarRelatorioTransacaoPdf(transacaoDTOList, outputStream);
+            relatorioTransacaoService.gerarRelatorioTransacaoPdf(transacaoDTOList, outputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ByteArrayOutputStream graficoDespesas(Long idCliente) {
+        log.info("Buscando despesas do usuario com id {}", idCliente);
+        List<Transacao> transacoes = transacaoRepository.findByIdClienteContaOrigem(idCliente).orElse(null);
+        assert transacoes != null;
+        log.info("Despesas encontradas: {}", transacoes.size());
+        Map<TipoDespesaEnum, BigDecimal> gastosPorCategoria = transacoes.stream()
+                .collect(Collectors.groupingBy(
+                        Transacao::getTipoDespesa,
+                        Collectors.mapping(
+                                Transacao::getValorTransacao,
+                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
+                        )
+                ));
+        return graficoService.gerarGrafico(new GraficoDespesaService(), Optional.of(gastosPorCategoria));
     }
 }
