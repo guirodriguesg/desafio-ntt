@@ -97,12 +97,6 @@ public class UsuarioService {
     }
 
     //MIGRAR
-
-//
-//    public Object relatorioDespesas() {
-//    }
-
-    //MIGRAR
     public Usuario toUsuarioEntity(UsuarioRequest usuarioRequest) {
         return usuarioMapper.toUsuarioEntity(usuarioRequest);
     }

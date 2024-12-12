@@ -1,6 +1,5 @@
 package nttdata.bank.controllers.transacao;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import nttdata.bank.controllers.transacao.requests.TransacaoRequest;
 import nttdata.bank.controllers.transacao.responses.TransacaoResponse;
@@ -53,6 +52,7 @@ public class TransacaoController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
+
     @PostMapping("/saque")
     private ResponseEntity<TransacaoResponse> realizarSaque(@RequestBody TransacaoRequest transacaoRequest) {
         log.info("Realizando saque");
@@ -95,5 +95,13 @@ public class TransacaoController {
                 .body(pdfBytes);
     }
 
+    @GetMapping("/relatorio-despesas/{idCliente}")
+    public ResponseEntity<?> relatorioDespesas(@PathVariable(value = "idCliente") Long idCliente) {
+        ByteArrayOutputStream baos = transacaoService.graficoDespesas(idCliente);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"grafico_despesas.png\"")
+                .contentType(MediaType.IMAGE_PNG)
+                .body(baos.toByteArray());
+    }
 
 }

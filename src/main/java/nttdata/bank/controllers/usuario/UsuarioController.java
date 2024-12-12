@@ -74,10 +74,6 @@ public class UsuarioController {
         return usuarioService.createUsersByExecel(file);
     }
 
-//    @GetMapping("/relatorio-despesas")
-//    public ResponseEntity<?> relatorioDespesas(){
-//        return ResponseEntity.ok(usuarioService.relatorioDespesas());
-//    }
 }
 
 //

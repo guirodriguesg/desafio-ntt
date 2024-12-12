@@ -1,6 +1,5 @@
-package nttdata.bank.service;
+package nttdata.bank.service.transacao;
 
-import com.itextpdf.forms.form.element.Button;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -18,22 +17,20 @@ import com.itextpdf.layout.properties.HorizontalAlignment;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import nttdata.bank.domain.dto.transacao.TransacaoDTO;
-import nttdata.bank.domain.entities.transacao.StatusTransacaoEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
 @Service
-public class PdfFileService {
+public class RelatorioTransacaoService {
 
-    private static final Logger log = LoggerFactory.getLogger(PdfFileService.class);
+    private static final Logger log = LoggerFactory.getLogger(RelatorioTransacaoService.class);
 
     private static final String R_SIFRAO = "R$";
 
