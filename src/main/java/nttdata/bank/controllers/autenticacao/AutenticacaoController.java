@@ -1,5 +1,7 @@
 package nttdata.bank.controllers.autenticacao;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import nttdata.bank.controllers.autenticacao.requests.AutenticacaoRequest;
 import nttdata.bank.controllers.autenticacao.responses.TokenResponse;
 import nttdata.bank.domain.entities.usuario.Usuario;
@@ -27,7 +29,7 @@ public class AutenticacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<?> autenticar(@RequestBody AutenticacaoRequest autenticacaoRequest) {
+    public ResponseEntity<?> autenticar(@RequestBody @NotNull @Valid AutenticacaoRequest autenticacaoRequest) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(autenticacaoRequest.login(), autenticacaoRequest.senha());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         if (authentication.isAuthenticated()) {

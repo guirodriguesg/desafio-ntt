@@ -2,6 +2,8 @@ package nttdata.bank.controllers.usuario;
 
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import nttdata.bank.controllers.usuario.requests.UsuarioRequest;
 import nttdata.bank.controllers.usuario.responses.UsuarioResponse;
 import nttdata.bank.mappers.usuario.UsuarioMapper;
@@ -38,7 +40,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<UsuarioResponse> getUserById(@PathVariable(value = "id") Long idUsuario) {
+    private ResponseEntity<UsuarioResponse> getUserById(@PathVariable(value = "id") @NotNull Long idUsuario) {
         log.info("Buscando usuario com id: {}", idUsuario);
         return usuarioService.getUserById(idUsuario).map(usuarioMapper::toUsuarioResponse)
                 .map(ResponseEntity::ok)
@@ -46,19 +48,19 @@ public class UsuarioController {
     }
 
     @PostMapping
-    private ResponseEntity<UsuarioResponse> createUser(@RequestBody UsuarioRequest usuarioRequest) {
+    private ResponseEntity<UsuarioResponse> createUser(@RequestBody @NotNull @Valid UsuarioRequest usuarioRequest) {
         log.info("Criando usuario");
         return ResponseEntity.ok(usuarioService.createUser(usuarioRequest));
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<UsuarioResponse> updateUser(@PathVariable(value = "id") Long idUsuario, @RequestBody UsuarioRequest usuarioRequest) {
+    private ResponseEntity<UsuarioResponse> updateUser(@PathVariable(value = "id") @NotNull Long idUsuario, @RequestBody @NotNull @Valid UsuarioRequest usuarioRequest) {
         log.info("Updating user");
         return ResponseEntity.ok(usuarioService.updateUser(idUsuario, usuarioRequest));
     }
 
     @DeleteMapping("/{id}")
-    private ResponseEntity deleteUser(@PathVariable(value = "id") Long id) {
+    private ResponseEntity deleteUser(@PathVariable(value = "id") @NotNull Long id) {
         log.info("Deleting user by id {}", id);
         try {
             usuarioService.deleteUser(id);
@@ -70,7 +72,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/importa-usuario")
-    public Optional<List<UsuarioResponse>> importarListaUsuarios(@RequestParam(name = "fileUsuarios") MultipartFile file){
+    public Optional<List<UsuarioResponse>> importarListaUsuarios(@RequestParam(name = "fileUsuarios") @NotNull MultipartFile file){
         return usuarioService.createUsersByExecel(file);
     }
 

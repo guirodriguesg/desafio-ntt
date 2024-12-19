@@ -1,6 +1,9 @@
 package nttdata.bank.controllers.transacao;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import nttdata.bank.controllers.transacao.requests.TransacaoRequest;
 import nttdata.bank.controllers.transacao.responses.TransacaoResponse;
 import nttdata.bank.mappers.transacao.TransacaoMapper;
@@ -36,7 +39,7 @@ public class TransacaoController {
     }
 
     @PostMapping("/deposito")
-    private ResponseEntity<TransacaoResponse> realizarDeposito(@RequestBody TransacaoRequest transacaoRequest) {
+    private ResponseEntity<TransacaoResponse> realizarDeposito(@RequestBody @NotNull @Valid TransacaoRequest transacaoRequest) {
         log.info("Realizando depósito");
         return transacaoService.realizarDeposito(transacaoMapper.toTransacao(transacaoRequest))
                 .map(transacaoMapper::toTransacaoResponse)
@@ -45,7 +48,7 @@ public class TransacaoController {
     }
 
     @PostMapping("/transferencia")
-    private ResponseEntity<TransacaoResponse> realizarTransferencia(@RequestBody TransacaoRequest transacaoRequest) {
+    private ResponseEntity<TransacaoResponse> realizarTransferencia(@RequestBody @NotNull @Valid TransacaoRequest transacaoRequest) {
         log.info("Realizando transferência");
         return transacaoService.realizarTransferencia(transacaoMapper.toTransacao(transacaoRequest))
                 .map(transacaoMapper::toTransacaoResponse)
@@ -54,7 +57,7 @@ public class TransacaoController {
     }
 
     @PostMapping("/saque")
-    private ResponseEntity<TransacaoResponse> realizarSaque(@RequestBody TransacaoRequest transacaoRequest) {
+    private ResponseEntity<TransacaoResponse> realizarSaque(@RequestBody @NotNull @Valid TransacaoRequest transacaoRequest) {
         log.info("Realizando saque");
         return transacaoService.realizarSaque(transacaoMapper.toTransacao(transacaoRequest))
                 .map(transacaoMapper::toTransacaoResponse)
@@ -63,7 +66,7 @@ public class TransacaoController {
     }
 
     @PostMapping("/pagamento")
-    private ResponseEntity<TransacaoResponse> realizarPagamento(@RequestBody TransacaoRequest transacaoRequest) {
+    private ResponseEntity<TransacaoResponse> realizarPagamento(@RequestBody @NotNull @Valid TransacaoRequest transacaoRequest) {
         log.info("Realizando pagamento transferência");
         return transacaoService.realizarPagamento(transacaoMapper.toTransacao(transacaoRequest))
                 .map(transacaoMapper::toTransacaoResponse)
@@ -72,14 +75,14 @@ public class TransacaoController {
     }
 
     @GetMapping("/converte-cambio")
-    public ResponseEntity<?> converterCambio(@RequestParam String moedaOrigem,
-                                             @RequestParam String moedaDestino, @RequestParam BigDecimal valor) {
+    public ResponseEntity<?> converterCambio(@RequestParam @NotBlank String moedaOrigem,
+                                             @RequestParam @NotBlank String moedaDestino, @RequestParam @NotNull BigDecimal valor) {
         return ResponseEntity.ok(transacaoService.converterCambio(moedaOrigem, moedaDestino, valor));
     }
 
     @GetMapping(value = "/relatorio-transacao/{idCliente}")
 
-    public ResponseEntity<?> gerarRelatorioTransacao(@PathVariable(name = "idCliente") Long idCliente) {
+    public ResponseEntity<?> gerarRelatorioTransacao(@PathVariable(name = "idCliente") @NotNull Long idCliente) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String dataHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT));
         transacaoService.gerarRelatorioTransacao(
@@ -96,7 +99,7 @@ public class TransacaoController {
     }
 
     @GetMapping("/relatorio-despesas/{idCliente}")
-    public ResponseEntity<?> relatorioDespesas(@PathVariable(value = "idCliente") Long idCliente) {
+    public ResponseEntity<?> relatorioDespesas(@PathVariable(value = "idCliente") @NotNull Long idCliente) {
         ByteArrayOutputStream baos = transacaoService.graficoDespesas(idCliente);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"grafico_despesas.png\"")
