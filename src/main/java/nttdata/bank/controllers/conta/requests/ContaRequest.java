@@ -1,80 +1,25 @@
 package nttdata.bank.controllers.conta.requests;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 
-public class ContaRequest {
-
-    private Long idConta;
-    private Long idUsuario;
-    private String codigoBanco;
-    private String codigoAgencia;
-    private String codigoConta;
-    private String digitoAgencia;
-    private String digitoConta;
-    private BigDecimal saldo;
-
-    public Long getIdConta() {
-        return idConta;
-    }
-
-    public void setIdConta(Long idConta) {
-        this.idConta = idConta;
-    }
-
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
-
-    public String getCodigoBanco() {
-        return codigoBanco;
-    }
-
-    public void setCodigoBanco(String codigoBanco) {
-        this.codigoBanco = codigoBanco;
-    }
-
-
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public String getCodigoAgencia() {
-        return codigoAgencia;
-    }
-
-    public void setCodigoAgencia(String codigoAgencia) {
-        this.codigoAgencia = codigoAgencia;
-    }
-
-    public String getCodigoConta() {
-        return codigoConta;
-    }
-
-    public void setCodigoConta(String codigoConta) {
-        this.codigoConta = codigoConta;
-    }
-
-    public String getDigitoAgencia() {
-        return digitoAgencia;
-    }
-
-    public void setDigitoAgencia(String digitoAgencia) {
-        this.digitoAgencia = digitoAgencia;
-    }
-
-    public String getDigitoConta() {
-        return digitoConta;
-    }
-
-    public void setDigitoConta(String digitoConta) {
-        this.digitoConta = digitoConta;
-    }
-
-    public BigDecimal getSaldo() {
-        return saldo;
-    }
-
-    public void setSaldo(BigDecimal saldo) {
-        this.saldo = saldo;
-    }
+public record ContaRequest(
+        Long idConta,
+        @NotNull(message = "ID do usuário é obrigatório")
+        Long idUsuario,
+        @NotBlank(message = "Código do banco é obrigatório")
+        String codigoBanco,
+        @NotBlank(message = "Código da agência é obrigatório")
+        String codigoAgencia,
+        @NotBlank(message = "Código da conta é obrigatório")
+        String codigoConta,
+        @NotBlank(message = "Digito da agência é obrigatório")
+        String digitoAgencia,
+        @NotBlank(message = "Digito da conta é obrigatório")
+        String digitoConta,
+        @NotNull(message = "Saldo é obrigatório")
+        BigDecimal saldo
+) {
 }

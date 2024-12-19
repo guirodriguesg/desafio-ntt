@@ -49,7 +49,7 @@ public class ContaService {
 
     public Optional<Conta> createConta(ContaRequest contaRequest) {
         log.info("Criando conta");
-        Optional<Usuario> usuario = usuarioService.getUserById(contaRequest.getIdUsuario());
+        Optional<Usuario> usuario = usuarioService.getUserById(contaRequest.idUsuario());
         if (usuario.isEmpty()) {
             log.error("Necessario um usuario ativo para criar uma conta");
             return Optional.empty();
@@ -69,10 +69,10 @@ public class ContaService {
             return Optional.empty();
         }
         Conta existingConta = existingContaOpt.get();
-        existingConta.setCodAgencia(contaRequest.getDigitoAgencia());
-        existingConta.setDigitoAgencia(contaRequest.getDigitoAgencia());
-        existingConta.setCodConta(contaRequest.getCodigoConta());
-        existingConta.setDigitoConta(contaRequest.getDigitoConta());
+        existingConta.setCodAgencia(contaRequest.digitoAgencia());
+        existingConta.setDigitoAgencia(contaRequest.digitoAgencia());
+        existingConta.setCodConta(contaRequest.codigoConta());
+        existingConta.setDigitoConta(contaRequest.digitoConta());
 
         return Optional.of(contaRepository.save(existingConta));
     }

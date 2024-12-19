@@ -1,6 +1,9 @@
 package nttdata.bank.controllers.conta;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import nttdata.bank.controllers.conta.requests.ContaRequest;
 import nttdata.bank.controllers.conta.responses.ContaResponse;
 import nttdata.bank.mappers.conta.ContaMapper;
@@ -36,33 +39,33 @@ public class ContaController {
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<List<ContaResponse>> buscarContaPorCliente(@PathVariable(value = "id") Long idCliente) {
+    private ResponseEntity<List<ContaResponse>> buscarContaPorCliente(@PathVariable(value = "id") @NotNull Long idCliente) {
         log.info("Buscando conta");
         return ResponseEntity.ok(contaService.getContaByIdCliente(idCliente));
     }
 
     @PostMapping
-    private ResponseEntity<ContaResponse> criarConta(@RequestBody ContaRequest contaRequest) {
+    private ResponseEntity<ContaResponse> criarConta(@RequestBody @NotNull @Valid ContaRequest contaRequest) {
         log.info("Criando conta");
         return contaService.createConta(contaRequest).map(contaMapper::toContaResponse).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<ContaResponse> atualizarConta(@PathVariable(value = "id") Long idConta, @RequestBody ContaRequest contaRequest) {
+    private ResponseEntity<ContaResponse> atualizarConta(@PathVariable(value = "id") @NotNull Long idConta, @RequestBody @NotNull @Valid ContaRequest contaRequest) {
         log.info("Atualizando conta");
         return contaService.updateConta(idConta, contaRequest).map(contaMapper::toContaResponse).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
 
     @DeleteMapping("/{id}")
-    private void deletarConta(@PathVariable(value = "id") Long idConta) {
+    private void deletarConta(@PathVariable(value = "id") @NotNull Long idConta) {
         log.info("Deletando conta");
         contaService.deleteConta(idConta);
     }
 
     @GetMapping("/saldo-externo/{id}")
-    private ResponseEntity<BigDecimal> buscarSaldoAtualbyMockApi(@PathVariable(name = "id") String moedaOrigem) {
+    private ResponseEntity<BigDecimal> buscarSaldoAtualbyMockApi(@PathVariable(name = "id") @NotBlank String moedaOrigem) {
         return ResponseEntity.ok(contaService.saldoAtualbyMockApi(moedaOrigem));
     }
 

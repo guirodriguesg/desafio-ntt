@@ -1,68 +1,24 @@
 package nttdata.bank.controllers.usuario.requests;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Null;
 import nttdata.bank.domain.entities.usuario.TipoUsuarioEnum;
 
-public class UsuarioRequest {
+import static nttdata.bank.utils.ConstatesUtils.REGEX_VALIDAR_EMAIL;
 
+public record UsuarioRequest(
+    Long id,
+    @NotBlank(message = "Nome é obrigatório")
+    String nome,
+    @NotBlank(message = "Login é obrigatório")
+    String login,
+    @NotBlank(message = "Senha é obrigatória")
+    String senha,
     @Null
-    private Long id;
-    @NotBlank
-    private String nome;
-    @NotBlank
-    private String login;
-    @NotBlank
-    private String senha;
-    @Null
-    private String email;
-    private TipoUsuarioEnum tipoUsuarioEnum;
-
-    public @Null Long getId() {
-        return id;
-    }
-
-    public void setId(@Null Long id) {
-        this.id = id;
-    }
-
-    public @NotBlank String getNome() {
-        return nome;
-    }
-
-    public void setNome(@NotBlank String nome) {
-        this.nome = nome;
-    }
-
-    public @NotBlank String getLogin() {
-        return login;
-    }
-
-    public void setLogin(@NotBlank String login) {
-        this.login = login;
-    }
-
-    public @NotBlank String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(@NotBlank String senha) {
-        this.senha = senha;
-    }
-
-    public @Null String getEmail() {
-        return email;
-    }
-
-    public void setEmail(@Null String email) {
-        this.email = email;
-    }
-
-    public TipoUsuarioEnum getTipoUsuario() {
-        return tipoUsuarioEnum;
-    }
-
-    public void setTipoUsuario(TipoUsuarioEnum tipoUsuarioEnum) {
-        this.tipoUsuarioEnum = tipoUsuarioEnum;
-    }
+//    @Email(regexp = REGEX_VALIDAR_EMAIL, message = "Email inválido")
+    String email,
+    @NotBlank(message = "Tipo de usuário é obrigatório")
+    TipoUsuarioEnum tipoUsuarioEnum
+) {
 }
