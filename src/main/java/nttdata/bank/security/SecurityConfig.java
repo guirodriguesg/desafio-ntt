@@ -36,6 +36,8 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers(HttpMethod.POST, URI_AUTENTICACAO).permitAll();
+                    req.requestMatchers(HttpMethod.POST, URI_USUARIO).permitAll();
+                    req.requestMatchers(HttpMethod.POST, URI_CONTA).permitAll();
                     req.requestMatchers(URIS_SWAGGER).permitAll();
                     req.requestMatchers(HttpMethod.PUT, URI_CONTA).hasRole(ADMIN);
                     req.requestMatchers(HttpMethod.DELETE, URI_CONTA).hasRole(ADMIN);

@@ -2,6 +2,7 @@ package nttdata.bank.controllers.usuario.requests;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import nttdata.bank.domain.entities.usuario.TipoUsuarioEnum;
 
@@ -18,7 +19,7 @@ public record UsuarioRequest(
     @Null
 //    @Email(regexp = REGEX_VALIDAR_EMAIL, message = "Email inválido")
     String email,
-    @NotBlank(message = "Tipo de usuário é obrigatório")
-    TipoUsuarioEnum tipoUsuarioEnum
+    @NotNull(message = "Tipo de usuário é obrigatório")
+    TipoUsuarioEnum tipoUsuario
 ) {
 }

@@ -47,7 +47,7 @@ public class UsuarioService {
         log.info("Creating user");
         //Validar se conta/agencia e login ja existem
         Usuario usuario = toUsuarioEntity(usuarioRequest);
-        usuario.setSenha(passwordEncoder.encode(usuarioRequest.getSenha()));
+        usuario.setSenha(passwordEncoder.encode(usuarioRequest.senha()));
         return toUsuarioResponse(usuarioRepository.save(usuario));
     }
 
@@ -60,10 +60,10 @@ public class UsuarioService {
         }
 
         Usuario usuario = usuarioOptional.get();
-        usuario.setNome(usuarioRequest.getNome());
-        usuario.setLogin(usuarioRequest.getLogin());
-        usuario.setEmail(usuarioRequest.getEmail());
-        usuario.setTipoUsuario(usuarioRequest.getTipoUsuario());
+        usuario.setNome(usuarioRequest.nome());
+        usuario.setLogin(usuarioRequest.login());
+        usuario.setEmail(usuarioRequest.email());
+        usuario.setTipoUsuario(usuarioRequest.tipoUsuario());
 
         return toUsuarioResponse(usuarioRepository.save(usuario));
     }
@@ -82,7 +82,7 @@ public class UsuarioService {
             return Optional.empty();
         }
 
-        if (excelFileService.isExcelFile(file.getName())) {
+        if (!excelFileService.isExcelFile(file.getName())) {
             log.error("Arquivo invalido");
             return Optional.empty();
         }

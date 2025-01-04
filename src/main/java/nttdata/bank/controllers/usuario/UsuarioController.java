@@ -48,7 +48,7 @@ public class UsuarioController {
     }
 
     @PostMapping
-    private ResponseEntity<UsuarioResponse> createUser(@RequestBody @NotNull @Valid UsuarioRequest usuarioRequest) {
+    private ResponseEntity<UsuarioResponse> createUser(@RequestBody @NotNull UsuarioRequest usuarioRequest) {
         log.info("Criando usuario");
         return ResponseEntity.ok(usuarioService.createUser(usuarioRequest));
     }

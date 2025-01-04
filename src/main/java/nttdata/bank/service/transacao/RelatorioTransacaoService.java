@@ -120,7 +120,7 @@ public class RelatorioTransacaoService {
         table.addCell(R_SIFRAO.concat(transacao.valorTransacao().toString()));
         table.addCell(Objects.isNull(transacao.taxaCambio()) ? "-" : R_SIFRAO.concat(transacao.taxaCambio().toString()));
         table.addCell(transacao.tipoTransacaoFinanceira().getDescricao());
-        table.addCell(transacao.tipoDespesa().getDescricao());
+        table.addCell(Objects.nonNull(transacao.tipoDespesa())  ? transacao.tipoDespesa().getDescricao() : "-");
         table.addCell(transacao.statusTransacao().getDescricao()).addStyle(createStatusCellStyle());
     }
 

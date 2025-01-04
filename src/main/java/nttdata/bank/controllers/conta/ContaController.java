@@ -45,7 +45,7 @@ public class ContaController {
     }
 
     @PostMapping
-    private ResponseEntity<ContaResponse> criarConta(@RequestBody @NotNull @Valid ContaRequest contaRequest) {
+    private ResponseEntity<ContaResponse> criarConta(@RequestBody @NotNull ContaRequest contaRequest) {
         log.info("Criando conta");
         return contaService.createConta(contaRequest).map(contaMapper::toContaResponse).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());

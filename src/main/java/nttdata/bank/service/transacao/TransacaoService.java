@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +51,8 @@ public class TransacaoService {
         log.info("Realizando depósito");
         Optional<Conta> conta = buscarContaPorId(transacao.getIdContaOrigem());
         verificarSeContaExite(conta);
-        executarDeposito(conta.get(), transacao);
+        conta.ifPresent(contaReturn -> executarDeposito(contaReturn, transacao));
+
         return Optional.of(transacaoRepository.save(transacao));
     }
 
@@ -66,9 +68,11 @@ public class TransacaoService {
         Optional<Conta> conta = buscarContaPorId(transacao.getIdContaOrigem());
         verificarSeContaExite(conta);
 
-        verificarSeSaldoSuficiente(transacao, conta.get());
+        conta.ifPresent(contaReturn -> {
+            verificarSeSaldoSuficiente(transacao, contaReturn);
+            executarSaque(contaReturn, transacao);
+        });
 
-        executarSaque(conta.get(), transacao);
         return Optional.of(transacaoRepository.save(transacao));
     }
 
@@ -83,9 +87,7 @@ public class TransacaoService {
         log.info("Realizando transferencia da conta com id: {}", transacao.getIdContaOrigem());
         Optional<Conta> contaOrigem = buscarContaPorId(transacao.getIdContaOrigem());
         verificarSeContaExite(contaOrigem);
-
-        verificarSeSaldoSuficiente(transacao, contaOrigem.get());
-
+        contaOrigem.ifPresent(conta -> verificarSeSaldoSuficiente(transacao, conta));
         Optional<Conta> contaDestino = buscarContaPorId(transacao.getIdContaDestino());
         verificarSeContaExite(contaDestino);
 
@@ -104,9 +106,11 @@ public class TransacaoService {
         Optional<Conta> contaOrigem = buscarContaPorId(transacao.getIdContaOrigem());
         verificarSeContaExite(contaOrigem);
 
-        verificarSeSaldoSuficiente(transacao, contaOrigem.get());
+        contaOrigem.ifPresent(conta -> {
+            verificarSeSaldoSuficiente(transacao, conta);
+            executarPagamento(conta, transacao);
+        });
 
-        executarPagamento(contaOrigem.get(), transacao);
         return Optional.of(transacaoRepository.save(transacao));
     }
 
@@ -119,12 +123,13 @@ public class TransacaoService {
 
 
     private void executarTransferencia(Conta origem, Conta destino, Transacao transacao) {
-        origem.setSaldo(origem.getSaldo().subtract(transacao.getValorTransacao()));
+        AtomicReference<BigDecimal> cotacao = new AtomicReference<>();
+                origem.setSaldo(origem.getSaldo().subtract(transacao.getValorTransacao()));
         destino.setSaldo(destino.getSaldo().add(transacao.getValorTransacao()));
-        BigDecimal cotacao = (BigDecimal) buscarTaxaCambio(MOEDA_BRL).get();
         origem = contaService.salvar(origem);
         destino = contaService.salvar(destino);
-        preencherTransacaoTransferenciaConcluida(origem, destino, transacao, cotacao);
+        buscarTaxaCambio(MOEDA_BRL).ifPresent(cotacaoReturn -> cotacao.set((BigDecimal) cotacaoReturn));
+        preencherTransacaoTransferenciaConcluida(origem, destino, transacao, cotacao.get());
     }
 
     private Optional<Conta> buscarContaPorId(Long id) {
@@ -160,7 +165,11 @@ public class TransacaoService {
 
     //MOVER PARA CONSTRUTOR
     private void preencherTransacaoSaqueConcluido(Conta origem, Transacao transacao, BigDecimal cotacao) {
-
+        transacao.setContaOrigem(origem);
+        transacao.setStatusTransacao(StatusTransacaoEnum.CONCLUIDA);
+        transacao.setTipoTransacaoFinanceira(TipoTransacaoFinEnum.RETIRADA);
+        transacao.setDataTransacao(LocalDateTime.now());
+        transacao.setTaxaCambio(cotacao);
     }
 
     //MOVER PARA CONSTRUTOR
@@ -198,8 +207,16 @@ public class TransacaoService {
         log.info("Buscando despesas do usuario com id {}", idCliente);
         List<Transacao> transacoes = transacaoRepository.findByIdClienteContaOrigem(idCliente).orElse(null);
         assert transacoes != null;
+        if(transacoes.isEmpty()){
+            throw new RuntimeException("Nenhuma despesa encontrada para o cliente com id: " + idCliente);
+        }
         log.info("Despesas encontradas: {}", transacoes.size());
         Map<TipoDespesaEnum, BigDecimal> gastosPorCategoria = transacoes.stream()
+                .peek(transacao -> {
+                    if(transacao.getTipoDespesa() == null){
+                        transacao.setTipoDespesa(TipoDespesaEnum.OUTROS);
+                    }
+                })
                 .collect(Collectors.groupingBy(
                         Transacao::getTipoDespesa,
                         Collectors.mapping(

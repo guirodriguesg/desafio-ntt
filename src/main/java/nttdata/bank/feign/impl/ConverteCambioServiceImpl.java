@@ -26,7 +26,7 @@ public class ConverteCambioServiceImpl implements ConverteCambioService {
 
     @Override
     @Cacheable(value = "cotacaoCache", key = "#moedaOrigem")
-    public Optional<?> buscarTaxaCambio(String moedaOrigem) {
+    public Optional<BigDecimal> buscarTaxaCambio(String moedaOrigem) {
         log.info("Obtendo taxa de cambio atualizada (Base em EUR)...");
         try {
 

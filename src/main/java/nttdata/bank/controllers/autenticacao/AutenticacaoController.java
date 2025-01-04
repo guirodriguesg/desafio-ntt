@@ -29,7 +29,7 @@ public class AutenticacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<?> autenticar(@RequestBody @NotNull @Valid AutenticacaoRequest autenticacaoRequest) {
+    public ResponseEntity<?> autenticar(@RequestBody @NotNull AutenticacaoRequest autenticacaoRequest) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(autenticacaoRequest.login(), autenticacaoRequest.senha());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         if (authentication.isAuthenticated()) {

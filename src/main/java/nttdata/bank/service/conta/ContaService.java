@@ -4,7 +4,6 @@ import nttdata.bank.controllers.conta.requests.ContaRequest;
 import nttdata.bank.controllers.conta.responses.ContaResponse;
 import nttdata.bank.domain.entities.conta.Conta;
 import nttdata.bank.domain.entities.usuario.Usuario;
-import nttdata.bank.feign.response.mockapi.ClienteExterno;
 import nttdata.bank.mappers.conta.ContaMapper;
 import nttdata.bank.repository.conta.ContaRepository;
 import nttdata.bank.service.ports.ClienteExternoService;
@@ -97,11 +96,10 @@ public class ContaService {
         return contaRepository.existsById(idConta);
     }
 
-    public boolean contaNaoExiste(Optional<Conta> conta) {
+    public void contaNaoExiste(Optional<Conta> conta) {
         if (conta.isEmpty()) {
             throw new RuntimeException("Conta não encontrada");
         }
-        return true;
     }
 
     public BigDecimal saldoAtualbyMockApi(String id) {

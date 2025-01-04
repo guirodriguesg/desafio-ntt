@@ -39,7 +39,7 @@ public class TransacaoController {
     }
 
     @PostMapping("/deposito")
-    private ResponseEntity<TransacaoResponse> realizarDeposito(@RequestBody @NotNull @Valid TransacaoRequest transacaoRequest) {
+    private ResponseEntity<TransacaoResponse> realizarDeposito(@RequestBody @NotNull TransacaoRequest transacaoRequest) {
         log.info("Realizando depósito");
         return transacaoService.realizarDeposito(transacaoMapper.toTransacao(transacaoRequest))
                 .map(transacaoMapper::toTransacaoResponse)
@@ -48,7 +48,7 @@ public class TransacaoController {
     }
 
     @PostMapping("/transferencia")
-    private ResponseEntity<TransacaoResponse> realizarTransferencia(@RequestBody @NotNull @Valid TransacaoRequest transacaoRequest) {
+    private ResponseEntity<TransacaoResponse> realizarTransferencia(@RequestBody @NotNull TransacaoRequest transacaoRequest) {
         log.info("Realizando transferência");
         return transacaoService.realizarTransferencia(transacaoMapper.toTransacao(transacaoRequest))
                 .map(transacaoMapper::toTransacaoResponse)
@@ -57,7 +57,7 @@ public class TransacaoController {
     }
 
     @PostMapping("/saque")
-    private ResponseEntity<TransacaoResponse> realizarSaque(@RequestBody @NotNull @Valid TransacaoRequest transacaoRequest) {
+    private ResponseEntity<TransacaoResponse> realizarSaque(@RequestBody @NotNull TransacaoRequest transacaoRequest) {
         log.info("Realizando saque");
         return transacaoService.realizarSaque(transacaoMapper.toTransacao(transacaoRequest))
                 .map(transacaoMapper::toTransacaoResponse)
@@ -66,7 +66,7 @@ public class TransacaoController {
     }
 
     @PostMapping("/pagamento")
-    private ResponseEntity<TransacaoResponse> realizarPagamento(@RequestBody @NotNull @Valid TransacaoRequest transacaoRequest) {
+    private ResponseEntity<TransacaoResponse> realizarPagamento(@RequestBody @NotNull TransacaoRequest transacaoRequest) {
         log.info("Realizando pagamento transferência");
         return transacaoService.realizarPagamento(transacaoMapper.toTransacao(transacaoRequest))
                 .map(transacaoMapper::toTransacaoResponse)
@@ -81,7 +81,6 @@ public class TransacaoController {
     }
 
     @GetMapping(value = "/relatorio-transacao/{idCliente}")
-
     public ResponseEntity<?> gerarRelatorioTransacao(@PathVariable(name = "idCliente") @NotNull Long idCliente) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         String dataHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT));
