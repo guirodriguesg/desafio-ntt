@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-@FeignClient(name = "converter-cambio-api", url = "https://api.exchangeratesapi.io/v1/",
-        configuration = FeignInterceptorConverteCambioConfig.class)//TRANSFERIR PARA O APPLICATION.PROPERTIES
+@FeignClient(name = "converter-cambio-api", url = "${exchangeratesapi.api.url}", configuration = FeignInterceptorConverteCambioConfig.class)
 public interface ConverteCambioClient {
 
     @GetMapping("convert")

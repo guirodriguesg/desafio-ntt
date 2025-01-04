@@ -12,8 +12,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Optional;
 
-@FeignClient(name = "cliente-externo-api", url = "https://api.mockapi.com/api/v1",
-configuration = FeignInterceptorConfig.class)//TRANSFERIR PARA O APPLICATION.PROPERTIES
+@FeignClient(name = "cliente-externo-api", url = "${cliente.externo.api.url}", configuration = FeignInterceptorConfig.class)
 public interface ContaExternaClient {
 
     @GetMapping("/cliente-externo")

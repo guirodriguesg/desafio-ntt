@@ -1,11 +1,19 @@
 package nttdata.bank.feign.response.cambio;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Map;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class CambioResponse {
 
     @JsonProperty("success")
@@ -20,62 +28,7 @@ public class CambioResponse {
     private String msgResponse;
     private BigDecimal valorConvertido;
 
-    public CambioResponse() {
-    }
-
-    public CambioResponse(String msgResponse){
-        this.msgResponse = msgResponse;
-    }
-
-    public boolean isStatusRequisicao() {
-        return statusRequisicao;
-    }
-
-    public void setStatusRequisicao(boolean statusRequisicao) {
-        this.statusRequisicao = statusRequisicao;
-    }
-
-    public LocalDate getDataTaxaCambio() {
-        return dataTaxaCambio;
-    }
-
-    public void setDataTaxaCambio(LocalDate dataTaxaCambio) {
-        this.dataTaxaCambio = dataTaxaCambio;
-    }
-
-    public String getMoedaBase() {
-        return moedaBase;
-    }
-
-    public void setMoedaBase(String moedaBase) {
-        this.moedaBase = moedaBase;
-    }
-
-    public Map<String, BigDecimal> getCotacoes() {
-        return cotacoes;
-    }
-
-    public void setCotacoes(Map<String, BigDecimal> cotacoes) {
-        this.cotacoes = cotacoes;
-    }
-
-    public BigDecimal getValorConvertido() {
-        return valorConvertido;
-    }
-
-    public void setValorConvertido(BigDecimal valorConvertido) {
-        this.valorConvertido = valorConvertido;
-    }
-
-    public String getMsgResponse() {
-        return msgResponse;
-    }
-
-    public void setMsgResponse(String msgResponse) {
-        this.msgResponse = msgResponse;
-    }
-
     public BigDecimal getCotacaoMoeda(String moeda){
-        return this.cotacoes.isEmpty() ? BigDecimal.ZERO : cotacoes.get(moeda);
+        return this.cotacoes.isEmpty() ? BigDecimal.ZERO : this.cotacoes.get(moeda);
     }
 }

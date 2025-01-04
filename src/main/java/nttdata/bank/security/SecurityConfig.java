@@ -14,15 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static nttdata.bank.utils.ConstatesUtils.*;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
-    private static final String URI_CONTA = "/api/v1/conta";
-    private static final String URI_USUARIO = "/api/v1/usuario";
-    private static final String URI_AUTENTICACAO = "/api/v1/autenticacao";
-    private static final String ADMIN = "ADMINISTRADOR";
-    private static final String[] URIS_SWAGGER = {"/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**"};
 
     private final SecurityFilterRequest securityFilterRequest;
 

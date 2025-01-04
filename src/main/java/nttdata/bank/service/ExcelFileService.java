@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static nttdata.bank.utils.ConstatesUtils.*;
+
 @Service
 public class ExcelFileService {
 
@@ -31,11 +33,11 @@ public class ExcelFileService {
                 }
 
                 UsuarioDTO usuario = new UsuarioDTO();
-                usuario.setNome(row.getCell(0).getStringCellValue()); // Nome na primeira coluna
-                usuario.setLogin(row.getCell(1).getStringCellValue()); // Idade na segunda coluna
-                usuario.setSenha(row.getCell(2).getStringCellValue()); // Email na terceira coluna
+                usuario.setNome(row.getCell(0).getStringCellValue());
+                usuario.setLogin(row.getCell(1).getStringCellValue());
+                usuario.setSenha(row.getCell(2).getStringCellValue());
                 usuario.setTipoUsuario(TipoUsuarioEnum.valueOf(row.getCell(3).getStringCellValue()));
-                usuario.setEmail(row.getCell(4).getStringCellValue()); // Email na terceira coluna
+                usuario.setEmail(row.getCell(4).getStringCellValue());
                 usuarios.add(usuario);
             }
         } catch (Exception e) {
@@ -46,10 +48,10 @@ public class ExcelFileService {
     }
 
     public boolean isExcelFile(String fileName) {
-        return fileName.endsWith(".xls") || fileName.endsWith(".xlsx");
+        return fileName.endsWith(MIME_XLS) || fileName.endsWith(MIME_XLSX);
     }
 
     public boolean isCsvFile(String fileName) {
-        return fileName.endsWith(".csv");
+        return fileName.endsWith(MIME_CSV);
     }
 }

@@ -17,6 +17,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static nttdata.bank.utils.ConstatesUtils.HEADER_AUTHORIZATION;
+import static nttdata.bank.utils.ConstatesUtils.URI_AUTENTICACAO;
+
 @Component
 public class SecurityFilterRequest extends OncePerRequestFilter {
 
@@ -52,7 +55,7 @@ public class SecurityFilterRequest extends OncePerRequestFilter {
     }
 
     private static boolean isLoginRequest(HttpServletRequest request) {
-        return (request.getRequestURI().equals("/api/v1/autenticacao") && request.getMethod().equals("POST"));
+        return (request.getRequestURI().equals(URI_AUTENTICACAO) && request.getMethod().equals("POST"));
     }
 
     private static boolean isSwaggerRequest(HttpServletRequest request) {
@@ -60,7 +63,7 @@ public class SecurityFilterRequest extends OncePerRequestFilter {
     }
 
     private String getTokenFromHeader(HttpServletRequest request){
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader(HEADER_AUTHORIZATION);
         if(notWasTokenInHeaderAuthorization(authHeader)){
             log.error("Token nao encontrado");
             throw new RuntimeException("Token nao encontrado");

@@ -18,6 +18,8 @@ import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Optional;
 
+import static nttdata.bank.utils.ConstatesUtils.R_SIFRAO;
+
 @Component
 public class GraficoDespesaService implements GraficoStrategy {
 
@@ -39,7 +41,7 @@ public class GraficoDespesaService implements GraficoStrategy {
         despesas.forEach((tipoDespesa, valor) -> {
             BigDecimal percentage = valor.divide(valorTotalDespesas, 2, RoundingMode.HALF_DOWN).multiply(BigDecimal.valueOf(100));
 
-            dataset.setValue(tipoDespesa.getDescricao().concat(" (R$")
+            dataset.setValue(tipoDespesa.getDescricao().concat(" ("+R_SIFRAO)
                     .concat(valor.toString()).concat(") (").concat(percentage.toString().concat("%)")), valor);
         });
         return dataset;

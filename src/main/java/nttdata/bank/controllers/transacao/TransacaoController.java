@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static nttdata.bank.utils.ConstatesUtils.*;
+
 @RestController
 @CrossOrigin(origins = "*") //ALTERAR PARA ORIGIN PERMITIDO
 @RequestMapping("/api/v1/transacao")
@@ -28,7 +30,7 @@ public class TransacaoController {
 
     private static final Logger log = LoggerFactory.getLogger(TransacaoController.class);
 
-    private static final String DATE_FORMAT = "ddMMyyyy_HHmmss";
+    private static final String RELATORIO_TRANSACAO_NAME = "relatorio-transacao_";
 
     private final TransacaoService transacaoService;
     private final TransacaoMapper transacaoMapper;
@@ -90,7 +92,7 @@ public class TransacaoController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "relatorio-transacao_".concat(dataHora).concat(".pdf"));
+        headers.setContentDispositionFormData("attachment", RELATORIO_TRANSACAO_NAME.concat(dataHora).concat(MIME_PDF));
 
         return ResponseEntity.ok()
                 .headers(headers)

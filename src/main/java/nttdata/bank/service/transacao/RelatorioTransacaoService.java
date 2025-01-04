@@ -27,12 +27,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
+import static nttdata.bank.utils.ConstatesUtils.DATE_FORMAT_BARRA;
+import static nttdata.bank.utils.ConstatesUtils.R_SIFRAO;
+
 @Service
 public class RelatorioTransacaoService {
 
     private static final Logger log = LoggerFactory.getLogger(RelatorioTransacaoService.class);
 
-    private static final String R_SIFRAO = "R$";
+    private static final String TITULO_RELATORIO = "RELATÓRIO DE TRANSAÇÕES - NTT BANK";
+    private static final String FOOTER = "NTT Bank - Confidential";
 
     public void gerarRelatorioTransacaoPdf(List<TransacaoDTO> transacoes, OutputStream outputStream) throws IOException {
         PdfDocument pdfDoc = new PdfDocument(new PdfWriter(outputStream));
@@ -63,7 +67,7 @@ public class RelatorioTransacaoService {
     }
 
     private void configurarDocumento(Document document, TransacaoDTO transacao, Table table) throws IOException {
-        document.add(new Paragraph("RELATÓRIO DE TRANSAÇÕES - NTT BANK")
+        document.add(new Paragraph(TITULO_RELATORIO)
                 .setFontSize(14)
                 .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
                 .setTextAlignment(TextAlignment.CENTER));
@@ -80,7 +84,7 @@ public class RelatorioTransacaoService {
         document.add(new Paragraph("\n"));
         document.add(table);
         document.add(new LineSeparator(new SolidLine()));
-        document.add(new Paragraph("NTT Bank - Confidential")
+        document.add(new Paragraph(FOOTER)
                 .setFontSize(10)
                 .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
                 .setTextAlignment(TextAlignment.CENTER));
@@ -114,7 +118,7 @@ public class RelatorioTransacaoService {
     }
 
     private void addTransactionRow(Table table, TransacaoDTO transacao) {
-        table.addCell(transacao.dataTransacao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+        table.addCell(transacao.dataTransacao().format(DateTimeFormatter.ofPattern(DATE_FORMAT_BARRA)));
         table.addCell(transacao.getCodigoEDigitoContaOrigem());
         table.addCell(transacao.getCodigoEDigitoContaDestino());
         table.addCell(R_SIFRAO.concat(transacao.valorTransacao().toString()));

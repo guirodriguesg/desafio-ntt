@@ -25,12 +25,14 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static nttdata.bank.utils.ConstatesUtils.MOEDA_BRL;
+
 @Service
 public class TransacaoService {
 
     private static final Logger log = LoggerFactory.getLogger(TransacaoService.class);
 
-    private static final String MOEDA_BRL = "BRL";
+
 
     private final TransacaoRepository transacaoRepository;
     private final ContaService contaService;

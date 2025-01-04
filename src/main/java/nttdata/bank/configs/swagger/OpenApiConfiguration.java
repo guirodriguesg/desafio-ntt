@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static nttdata.bank.utils.ConstatesUtils.BEARER_KEY;
+
 @Configuration
 public class OpenApiConfiguration {
 
@@ -17,7 +19,7 @@ public class OpenApiConfiguration {
     public OpenAPI customOpenAPI(@Value("${springdoc.version}") String apiVersion) {
         return new OpenAPI()
                 .components(new Components()
-                        .addSecuritySchemes("bearer-key",
+                        .addSecuritySchemes(BEARER_KEY,
                                 new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
                 .info(new Info()
                         .title("NTT BANK API")
