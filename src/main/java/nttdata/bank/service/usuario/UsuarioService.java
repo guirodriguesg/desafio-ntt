@@ -9,6 +9,8 @@ import nttdata.bank.repository.usuario.UsuarioRepository;
 import nttdata.bank.service.ExcelFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,9 +35,9 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<List<UsuarioResponse>> getAllUsers() {
+    public Page<Usuario> getAllUsers(Pageable pageable) {
         log.info("Getting all users");
-        return Optional.of(usuarioRepository.findAll().stream().map(usuarioMapper::toUsuarioResponse).toList());
+        return usuarioRepository.findAll(pageable);
     }
 
     public Optional<Usuario> getUserById(Long id) {
@@ -96,7 +98,6 @@ public class UsuarioService {
         }
     }
 
-    //MIGRAR
     public Usuario toUsuarioEntity(UsuarioRequest usuarioRequest) {
         return usuarioMapper.toUsuarioEntity(usuarioRequest);
     }

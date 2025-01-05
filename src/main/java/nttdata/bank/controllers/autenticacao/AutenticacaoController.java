@@ -1,6 +1,5 @@
 package nttdata.bank.controllers.autenticacao;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import nttdata.bank.controllers.autenticacao.requests.AutenticacaoRequest;
 import nttdata.bank.controllers.autenticacao.responses.TokenResponse;

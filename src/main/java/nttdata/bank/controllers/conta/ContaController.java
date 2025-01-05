@@ -10,6 +10,9 @@ import nttdata.bank.mappers.conta.ContaMapper;
 import nttdata.bank.service.conta.ContaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,21 +36,21 @@ public class ContaController {
     }
 
     @GetMapping
-    private ResponseEntity<List<ContaResponse>> buscarContaPorCliente() {
+    private Page<ContaResponse> buscarContaPorCliente(@PageableDefault(sort = {"idUsuario"}) Pageable pageable) {
         log.info("Buscando conta");
-        return ResponseEntity.ok(contaService.getAllContas());
+        return contaService.getAllContas(pageable).map(contaMapper::toContaResponse);
     }
 
     @GetMapping("/{id}")
     private ResponseEntity<List<ContaResponse>> buscarContaPorCliente(@PathVariable(value = "id") @NotNull Long idCliente) {
         log.info("Buscando conta");
-        return ResponseEntity.ok(contaService.getContaByIdCliente(idCliente));
+        return ResponseEntity.ok(contaService.getContaByIdCliente(idCliente).stream().map(contaMapper::toContaResponse).toList());
     }
 
     @PostMapping
     private ResponseEntity<ContaResponse> criarConta(@RequestBody @NotNull ContaRequest contaRequest) {
         log.info("Criando conta");
-        return contaService.createConta(contaRequest).map(contaMapper::toContaResponse).map(ResponseEntity::ok)
+        return contaService.createConta(contaMapper.toConta(contaRequest), contaRequest.idUsuario()).map(contaMapper::toContaResponse).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
 
@@ -69,4 +72,9 @@ public class ContaController {
         return ResponseEntity.ok(contaService.saldoAtualbyMockApi(moedaOrigem));
     }
 
+
+    //
+//                .map(regimeTituloMapper::toResponse)
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 }

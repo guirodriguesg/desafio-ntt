@@ -1,7 +1,6 @@
 package nttdata.bank.controllers.transacao;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import nttdata.bank.controllers.transacao.requests.TransacaoRequest;
@@ -20,7 +19,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static nttdata.bank.utils.ConstatesUtils.*;
+import static nttdata.bank.utils.ConstatesUtils.DATE_FORMAT;
+import static nttdata.bank.utils.ConstatesUtils.MIME_PDF;
 
 @RestController
 @CrossOrigin(origins = "*") //ALTERAR PARA ORIGIN PERMITIDO

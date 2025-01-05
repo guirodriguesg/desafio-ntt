@@ -6,8 +6,6 @@ import nttdata.bank.service.ports.ClienteExternoService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
