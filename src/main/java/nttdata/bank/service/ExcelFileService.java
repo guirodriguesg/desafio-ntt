@@ -1,7 +1,9 @@
 package nttdata.bank.service;
 
+import io.micrometer.common.util.StringUtils;
 import nttdata.bank.domain.dto.usuario.UsuarioDTO;
 import nttdata.bank.domain.entities.usuario.TipoUsuarioEnum;
+import nttdata.bank.handlers.ArquivoException;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -32,6 +34,9 @@ public class ExcelFileService {
                     continue;
                 }
 
+                if(StringUtils.isBlank(row.getCell(0).getStringCellValue())) {
+                    continue;
+                }
                 UsuarioDTO usuario = new UsuarioDTO();
                 usuario.setNome(row.getCell(0).getStringCellValue());
                 usuario.setLogin(row.getCell(1).getStringCellValue());
@@ -42,6 +47,7 @@ public class ExcelFileService {
             }
         } catch (Exception e) {
             log.error("Erro ao importar usuários do arquivo Excel", e);
+            throw new ArquivoException("Erro ao importar usuários do arquivo Excel", INTERNAL_SERVER_ERROR);
         }
 
         return usuarios;

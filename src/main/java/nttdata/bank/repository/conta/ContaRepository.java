@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface ContaRepository extends JpaRepository<Conta, Long> {
 
     @Query("SELECT c FROM Conta c WHERE c.usuario.id = :idUsuario")
-    Optional<List<Conta>> findByIdUsuario(Long idUsuario);
+    Optional<List<Conta>> findContaByIdUsuario(Long idUsuario);
 }

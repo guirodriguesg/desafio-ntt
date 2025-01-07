@@ -4,6 +4,7 @@ import nttdata.bank.controllers.usuario.requests.UsuarioRequest;
 import nttdata.bank.controllers.usuario.responses.UsuarioResponse;
 import nttdata.bank.domain.dto.usuario.UsuarioDTO;
 import nttdata.bank.domain.entities.usuario.Usuario;
+import nttdata.bank.handlers.UsuarioException;
 import nttdata.bank.mappers.usuario.UsuarioMapper;
 import nttdata.bank.repository.usuario.UsuarioRepository;
 import nttdata.bank.service.ExcelFileService;
@@ -17,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
+
+import static nttdata.bank.utils.ConstatesUtils.*;
 
 @Service
 public class UsuarioService {
@@ -36,29 +39,32 @@ public class UsuarioService {
     }
 
     public Page<Usuario> getAllUsers(Pageable pageable) {
-        log.info("Getting all users");
         return usuarioRepository.findAll(pageable);
     }
 
     public Optional<Usuario> getUserById(Long id) {
-        log.info("Getting user by id {}", id);
         return usuarioRepository.findById(id);
     }
 
     public UsuarioResponse createUser(UsuarioRequest usuarioRequest) {
-        log.info("Creating user");
-        //Validar se conta/agencia e login ja existem
         Usuario usuario = toUsuarioEntity(usuarioRequest);
         usuario.setSenha(passwordEncoder.encode(usuarioRequest.senha()));
-        return toUsuarioResponse(usuarioRepository.save(usuario));
+        try {
+            return toUsuarioResponse(usuarioRepository.save(usuario));
+        } catch (Exception e) {
+            if (e.getMessage().contains("usuario_uk_login")) {
+                log.error("Login ja cadastrado");
+                throw new UsuarioException("Login ja cadastrado", BAD_REQUEST);
+            }
+            throw new UsuarioException("Erro ao criar cliente", INTERNAL_SERVER_ERROR);
+        }
     }
 
     public UsuarioResponse updateUser(Long idUsuario, UsuarioRequest usuarioRequest) {
-        log.info("Updating user");
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(idUsuario);
         if (usuarioOptional.isEmpty()) {
             log.warn("Usuario com id {} nao encontrando", idUsuario);
-            return null;
+            throw new UsuarioException("Usuario nao encontrado", NOT_FOUND);
         }
 
         Usuario usuario = usuarioOptional.get();
@@ -66,8 +72,15 @@ public class UsuarioService {
         usuario.setLogin(usuarioRequest.login());
         usuario.setEmail(usuarioRequest.email());
         usuario.setTipoUsuario(usuarioRequest.tipoUsuario());
-
-        return toUsuarioResponse(usuarioRepository.save(usuario));
+        try {
+            return toUsuarioResponse(usuarioRepository.save(usuario));
+        } catch (Exception e) {
+            if (e.getMessage().contains("usuario_uk_login")) {
+                log.error("Login ja cadastrado");
+                throw new UsuarioException("Login ja cadastrado", BAD_REQUEST);
+            }
+            throw new UsuarioException("Erro ao criar cliente", INTERNAL_SERVER_ERROR);
+        }
     }
 
     public void deleteUser(Long id) {
@@ -76,17 +89,16 @@ public class UsuarioService {
     }
 
     public Optional<List<UsuarioResponse>> createUsersByExecel(MultipartFile file) {
-        log.info("Creating users by excel");
         List<Usuario> usuarios;
 
         if (file.isEmpty()) {
             log.error("Arquivo vazio");
-            return Optional.empty();
+            throw new UsuarioException("Arquivo vazio", NOT_FOUND);
         }
 
-        if (!excelFileService.isExcelFile(file.getName())) {
+        if (!excelFileService.isExcelFile(file.getOriginalFilename())) {
             log.error("Arquivo invalido");
-            return Optional.empty();
+            throw new UsuarioException("Arquivo invalido", BAD_REQUEST);
         }
 
         try {
@@ -94,7 +106,7 @@ public class UsuarioService {
             return Optional.of(usuarioRepository.saveAll(usuarios).stream().map(usuarioMapper::toUsuarioResponse).toList());
         } catch (Exception e) {
             log.error("Erro ao criar usuarios por excel", e);
-            return Optional.empty();
+            throw new UsuarioException("Erro ao criar usuarios por excel", INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -57,14 +57,14 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<UsuarioResponse> updateUser(@PathVariable(value = "id") @NotNull Long idUsuario, @RequestBody @NotNull @Valid UsuarioRequest usuarioRequest) {
-        log.info("Updating user");
+    private ResponseEntity<UsuarioResponse> updateUser(@PathVariable(value = "id") @NotNull Long idUsuario, @RequestBody @NotNull UsuarioRequest usuarioRequest) {
+        log.info("Atualizando usuario com id: {}", idUsuario);
         return ResponseEntity.ok(usuarioService.updateUser(idUsuario, usuarioRequest));
     }
 
     @DeleteMapping("/{id}")
     private ResponseEntity deleteUser(@PathVariable(value = "id") @NotNull Long id) {
-        log.info("Deleting user by id {}", id);
+        log.info("Deletando usuario com id {}", id);
         try {
             usuarioService.deleteUser(id);
             return ResponseEntity.ok().build();
@@ -76,12 +76,8 @@ public class UsuarioController {
 
     @PostMapping("/importa-usuario")
     public Optional<List<UsuarioResponse>> importarListaUsuarios(@RequestParam(name = "fileUsuarios") @NotNull MultipartFile file){
+        log.info("Criando usuarios por arquivo");
         return usuarioService.createUsersByExecel(file);
     }
 
 }
-
-//
-//                .map(regimeTituloMapper::toResponse)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());

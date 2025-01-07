@@ -1,6 +1,6 @@
 package nttdata.bank.feign.impl;
 
-import nttdata.bank.exceptions.cambio.CambioBusinessException;
+import nttdata.bank.handlers.CambioException;
 import nttdata.bank.feign.clients.ConverteCambioClient;
 import nttdata.bank.feign.response.cambio.CambioResponse;
 import nttdata.bank.service.ports.ConverteCambioService;
@@ -39,7 +39,7 @@ public class ConverteCambioServiceImpl implements ConverteCambioService {
                     return Optional.of(taxaOrigem.setScale(2, RoundingMode.HALF_UP));
                 } else {
                     log.warn("Nao foi possivel converter a moeda: Cotacao invalida!");
-                    throw new CambioBusinessException("Nao foi possivel converter a moeda: Cotacao invalida!");
+                    throw new CambioException("Nao foi possivel converter a moeda: Cotacao invalida!");
                 }
             }
             return Optional.empty();
@@ -60,7 +60,7 @@ public class ConverteCambioServiceImpl implements ConverteCambioService {
 
             if (valor.compareTo(BigDecimal.ZERO) <= 0) {
                 log.warn("Valor invalido para conversao");
-                throw new CambioBusinessException("Valor invalido para conversao");
+                throw new CambioException("Valor invalido para conversao");
             }
 
             Optional<CambioResponse> cambioResponse = converteCambioClient.getTodasCotacoes();
@@ -74,7 +74,7 @@ public class ConverteCambioServiceImpl implements ConverteCambioService {
                     return Optional.of(valorConvertido);
                 } else {
                     log.warn("Nao foi possivel converter a moeda: Cotacao invalida!");
-                    throw new CambioBusinessException("Nao foi possivel converter a moeda: Cotacao invalida!");
+                    throw new CambioException("Nao foi possivel converter a moeda: Cotacao invalida!");
                 }
             }
             return Optional.empty();

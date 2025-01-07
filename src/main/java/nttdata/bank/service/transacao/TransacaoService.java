@@ -6,6 +6,7 @@ import nttdata.bank.domain.entities.transacao.StatusTransacaoEnum;
 import nttdata.bank.domain.entities.transacao.TipoDespesaEnum;
 import nttdata.bank.domain.entities.transacao.TipoTransacaoFinEnum;
 import nttdata.bank.domain.entities.transacao.Transacao;
+import nttdata.bank.handlers.TransacaoException;
 import nttdata.bank.repository.transacao.TransacaoRepository;
 import nttdata.bank.service.GraficoService;
 import nttdata.bank.service.conta.ContaService;
@@ -25,7 +26,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static nttdata.bank.utils.ConstatesUtils.MOEDA_BRL;
+import static nttdata.bank.utils.ConstatesUtils.*;
 
 @Service
 public class TransacaoService {
@@ -50,7 +51,6 @@ public class TransacaoService {
 
 
     public Optional<Transacao> realizarDeposito(Transacao transacao) {
-        log.info("Realizando depósito");
         Optional<Conta> conta = buscarContaPorId(transacao.getIdContaOrigem());
         verificarSeContaExite(conta);
         conta.ifPresent(contaReturn -> executarDeposito(contaReturn, transacao));
@@ -66,7 +66,6 @@ public class TransacaoService {
     }
 
     public Optional<Transacao> realizarSaque(Transacao transacao) {
-        log.info("Realizando saque");
         Optional<Conta> conta = buscarContaPorId(transacao.getIdContaOrigem());
         verificarSeContaExite(conta);
 
@@ -86,7 +85,6 @@ public class TransacaoService {
     }
 
     public Optional<Transacao> realizarTransferencia(Transacao transacao) {
-        log.info("Realizando transferencia da conta com id: {}", transacao.getIdContaOrigem());
         Optional<Conta> contaOrigem = buscarContaPorId(transacao.getIdContaOrigem());
         verificarSeContaExite(contaOrigem);
         contaOrigem.ifPresent(conta -> verificarSeSaldoSuficiente(transacao, conta));
@@ -122,7 +120,6 @@ public class TransacaoService {
         conta = contaService.salvar(conta);
         preencherTransacaoSaqueConcluido(conta, transacao, cotacao);
     }
-
 
     private void executarTransferencia(Conta origem, Conta destino, Transacao transacao) {
         AtomicReference<BigDecimal> cotacao = new AtomicReference<>();
@@ -201,7 +198,7 @@ public class TransacaoService {
             log.info("Gerando relatório de transações");
             relatorioTransacaoService.gerarRelatorioTransacaoPdf(transacaoDTOList, outputStream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new TransacaoException("Erro ao gerar relatorio de transacoes", INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -210,7 +207,7 @@ public class TransacaoService {
         List<Transacao> transacoes = transacaoRepository.findByIdClienteContaOrigem(idCliente).orElse(null);
         assert transacoes != null;
         if(transacoes.isEmpty()){
-            throw new RuntimeException("Nenhuma despesa encontrada para o cliente com id: " + idCliente);
+            throw new TransacaoException("Nenhuma despesa encontrada para o cliente com id: " + idCliente, NOT_FOUND);
         }
         log.info("Despesas encontradas: {}", transacoes.size());
         Map<TipoDespesaEnum, BigDecimal> gastosPorCategoria = transacoes.stream()

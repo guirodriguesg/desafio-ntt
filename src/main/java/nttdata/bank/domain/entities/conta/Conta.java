@@ -28,7 +28,7 @@ public class Conta {
     private BigDecimal saldo;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario", referencedColumnName = "ID_USUARIO")
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID_USUARIO")
     private Usuario usuario;
 
 //    private String tipoConta;

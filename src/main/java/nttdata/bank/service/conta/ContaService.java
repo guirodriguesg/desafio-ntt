@@ -3,6 +3,7 @@ package nttdata.bank.service.conta;
 import nttdata.bank.controllers.conta.requests.ContaRequest;
 import nttdata.bank.domain.entities.conta.Conta;
 import nttdata.bank.domain.entities.usuario.Usuario;
+import nttdata.bank.handlers.ContaException;
 import nttdata.bank.repository.conta.ContaRepository;
 import nttdata.bank.service.ports.ClienteExternoService;
 import nttdata.bank.service.usuario.UsuarioService;
@@ -16,6 +17,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Optional;
+
+import static nttdata.bank.utils.ConstatesUtils.*;
 
 @Service
 public class ContaService {
@@ -33,26 +36,32 @@ public class ContaService {
     }
 
     public Page<Conta> getAllContas(Pageable pageable) {
-        log.info("Buscando todas as contas");
         return contaRepository.findAll(pageable);
     }
 
     public List<Conta> getContaByIdCliente(Long idCliente) {
-        log.info("Buscando conta com id: {}", idCliente);
-        return contaRepository.findByIdUsuario(idCliente).orElse(null);
+        return contaRepository.findContaByIdUsuario(idCliente).orElse(null);
     }
 
     public Optional<Conta> createConta(Conta conta, Long idUsuario) {
-        log.info("Criando conta");
         Optional<Usuario> usuario = usuarioService.getUserById(idUsuario);
         if (usuario.isEmpty()) {
             log.error("Necessario um usuario ativo para criar uma conta");
-            return Optional.empty();
+            throw new ContaException("Necessario um usuario ativo para criar uma conta", BAD_REQUEST);
         }
 
         conta.setUsuario(usuario.get());
 
-        return Optional.of(contaRepository.save(conta));
+        try{
+            return Optional.of(contaRepository.save(conta));
+        } catch (Exception e) {
+            if(e.getMessage().contains("conta_uk_cod_agencia_cod_conta")) {
+                log.error("Conta já existe");
+                throw new ContaException("Conta já existe", BAD_REQUEST);
+            }
+            log.error("Erro ao criar conta");
+            throw new ContaException("Erro ao criar conta", INTERNAL_SERVER_ERROR);
+        }
     }
 
     public Optional<Conta> updateConta(Long idConta, ContaRequest contaRequest) {
@@ -60,7 +69,7 @@ public class ContaService {
         Optional<Conta> existingContaOpt = contaRepository.findById(idConta);
         if (existingContaOpt.isEmpty()) {
             log.warn("Conta com id {} não encontrada", idConta);
-            return Optional.empty();
+            throw new ContaException("Conta não encontrada", NOT_FOUND);
         }
         Conta existingConta = existingContaOpt.get();
         existingConta.setCodAgencia(contaRequest.digitoAgencia());
@@ -83,7 +92,7 @@ public class ContaService {
 
     public void contaNaoExiste(Optional<Conta> conta) {
         if (conta.isEmpty()) {
-            throw new RuntimeException("Conta não encontrada");
+            throw new ContaException("Conta não encontrada", NOT_FOUND);
         }
     }
 
@@ -91,12 +100,12 @@ public class ContaService {
         log.info("Buscando saldo atual cliente externo com id {}", id);
         if (id == null) {
             log.warn("Id do cliente externo não pode ser nulo");
-            throw new RuntimeException("Id do cliente externo não pode ser nulo");
+            throw new ContaException("Id do cliente externo não pode ser nulo", BAD_REQUEST);
         }
         BigDecimal saldo = (BigDecimal) clienteExternoService.buscarSaldoClienteExterno(id).orElse(null);
         if (saldo == null) {
             log.warn("Saldo não encontrado para o cliente {}", id);
-            throw new RuntimeException("Saldo não encontrado");
+            throw new ContaException("Saldo não encontrado", NOT_FOUND);
         }
 
         return saldo.setScale(2, RoundingMode.HALF_UP);

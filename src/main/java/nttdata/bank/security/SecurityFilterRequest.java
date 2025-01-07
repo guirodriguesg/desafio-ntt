@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import nttdata.bank.domain.entities.usuario.Usuario;
+import nttdata.bank.handlers.AutenticacaoException;
 import nttdata.bank.repository.usuario.UsuarioRepository;
 import nttdata.bank.security.autenticacao.JwtTokenService;
 import org.apache.commons.lang3.StringUtils;
@@ -17,8 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static nttdata.bank.utils.ConstatesUtils.HEADER_AUTHORIZATION;
-import static nttdata.bank.utils.ConstatesUtils.URI_AUTENTICACAO;
+import static nttdata.bank.utils.ConstatesUtils.*;
 
 @Component
 public class SecurityFilterRequest extends OncePerRequestFilter {
@@ -45,7 +45,7 @@ public class SecurityFilterRequest extends OncePerRequestFilter {
             final String subjectFromToken = this.jwtTokenService.getSubjectToken(token);
 
             Usuario usuario = usuarioRepository.findByLogin(subjectFromToken)
-                    .orElseThrow(() -> new RuntimeException("Usuario nao encontrado"));
+                    .orElseThrow(() -> new AutenticacaoException("Usuario nao encontrado", UNAUTHORIZED));
 
             var authenticationToken = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -66,7 +66,7 @@ public class SecurityFilterRequest extends OncePerRequestFilter {
         final String authHeader = request.getHeader(HEADER_AUTHORIZATION);
         if(notWasTokenInHeaderAuthorization(authHeader)){
             log.error("Token nao encontrado");
-            throw new RuntimeException("Token nao encontrado");
+            throw new AutenticacaoException("Token nao encontrado", UNAUTHORIZED);
         }
         return getBearerToken(authHeader);
     }

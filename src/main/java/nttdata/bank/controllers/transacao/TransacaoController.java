@@ -51,7 +51,7 @@ public class TransacaoController {
 
     @PostMapping("/transferencia")
     private ResponseEntity<TransacaoResponse> realizarTransferencia(@RequestBody @NotNull TransacaoRequest transacaoRequest) {
-        log.info("Realizando transferência");
+        log.info("Realizando transferencia da conta com id: {}", transacaoRequest.idContaOrigem());
         return transacaoService.realizarTransferencia(transacaoMapper.toTransacao(transacaoRequest))
                 .map(transacaoMapper::toTransacaoResponse)
                 .map(ResponseEntity::ok)

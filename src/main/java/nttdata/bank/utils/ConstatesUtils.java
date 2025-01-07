@@ -9,6 +9,12 @@ public class ConstatesUtils {
     public static final String HEADER_ACCESS_KEY = "access_key";
     public static final String HEADER_AUTHORIZATION = "Authorization";
 
+    public static final int OK = 200;
+    public static final int NOT_FOUND = 404;
+    public static final int UNAUTHORIZED = 401;
+    public static final int BAD_REQUEST = 400;
+    public static final int INTERNAL_SERVER_ERROR = 500;
+
     public static final String URI_CONTA = "/api/v1/conta";
     public static final String URI_USUARIO = "/api/v1/usuario";
     public static final String URI_AUTENTICACAO = "/api/v1/autenticacao";

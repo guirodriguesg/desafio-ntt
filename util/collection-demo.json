@@ -1,0 +1,953 @@
+{
+	"info": {
+		"_postman_id": "5fea2004-c4eb-4ee0-b65a-ee5c57c8e832",
+		"name": "Scratch Pad",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "12942050"
+	},
+	"item": [
+		{
+			"name": "other",
+			"item": [
+				{
+					"name": "AUTENTICACAO",
+					"item": [
+						{
+							"name": "AUTENTICAR",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Save token to environment variable\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.environment.set(\"token_bank\", jsonData.token);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.2.0"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"login\": \"joaoMaria8\",\n\t\"senha\": \"rms123456\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/v1/autenticacao"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "USUARIO",
+					"item": [
+						{
+							"name": "DELETAR USUARIO",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"url": "http://localhost:8080/api/v1/usuario/2"
+							},
+							"response": []
+						},
+						{
+							"name": "CRIAR LISTA USUARIOS",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "multipart/form-data"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "fileUsuarios",
+											"type": "file",
+											"src": "/C:/Users/guilhermegomes/Documents/projetos/my/desafio-ntt/planilha_lista_usuarios.xlsx"
+										}
+									]
+								},
+								"url": "http://localhost:8080/api/v1/usuario/importa-usuario"
+							},
+							"response": []
+						},
+						{
+							"name": "ATUALIZA USUARIO",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\t{\n\t\t\"nome\": \"Lebron James\",\n\t\t\"login\": \"ljames\",\n\t\t\"email\": \"ljames@gmail.com\",\n\t\t\"tipoUsuario\": \"CLIENTE\"\n\t}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/v1/usuario/3"
+							},
+							"response": []
+						},
+						{
+							"name": "CRIA USUARIO",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"nome\": \"Mario Luiz\",\n\t\"login\": \"ml2025\",\n\t\"senha\": \"ml123456\",\n\t\"email\": \"ml@testes.com\",\n\t\"tipoUsuario\": \"CLIENTE\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/v1/usuario"
+							},
+							"response": []
+						},
+						{
+							"name": "BUSCA TODOS USUARIOS",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"url": "http://localhost:8080/api/v1/usuario"
+							},
+							"response": []
+						},
+						{
+							"name": "BUSCA USUARIO POR ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"url": "http://localhost:8080/api/v1/usuario/2"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "CONTA",
+					"item": [
+						{
+							"name": "BUSCAR SALDO EXTERNO",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.2.0"
+									},
+									{
+										"key": "x-api-key",
+										"value": "5a97079c885145ecabedfe5372d6b5aa"
+									}
+								],
+								"url": "http://localhost:8080/api/v1/conta/saldo-externo/{{$randomUUID}}"
+							},
+							"response": []
+						},
+						{
+							"name": "CRIA CONTA",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"idUsuario\": 4,\n    \"codigoBanco\": \"321\",\n    \"codigoAgencia\": \"5\",\n    \"codigoConta\": \"169695\",\n    \"digitoAgencia\": \"3\",\n    \"digitoConta\": \"5\",\n    \"saldo\": 5000.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/v1/conta"
+							},
+							"response": []
+						},
+						{
+							"name": "DELETAR CONTA",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"url": "http://localhost:8080/api/v1/conta/9"
+							},
+							"response": []
+						},
+						{
+							"name": "BUSCAR CONTA POR ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"url": "http://localhost:8080/api/v1/conta/1"
+							},
+							"response": []
+						},
+						{
+							"name": "BUSCAR CONTAS",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"url": "http://localhost:8080/api/v1/conta"
+							},
+							"response": []
+						},
+						{
+							"name": "ATUALIZAR CONTA",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\t{\n\t\t\"idUsuario\": 9,\n\t\t\"codigoBanco\": \"321\",\n\t\t\"codigoAgencia\": \"105\",\n\t\t\"codigoConta\": \"10505\",\n\t\t\"digitoAgencia\": \"3\",\n\t\t\"digitoConta\": \"5\"\n\t}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/v1/conta/9"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "TRANSACAO",
+					"item": [
+						{
+							"name": "RELATORIO DESPESA",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"url": "http://localhost:8080/api/v1/transacao/relatorio-despesas/4"
+							},
+							"response": []
+						},
+						{
+							"name": "RELATORIO TRANSACAO",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.2.0"
+									}
+								],
+								"url": "http://localhost:8080/api/v1/transacao/relatorio-transacao/4"
+							},
+							"response": []
+						},
+						{
+							"name": "CONVERTER CAMBIO",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.2.0"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/api/v1/transacao/converte-cambio?moedaOrigem=BRL&moedaDestino=USD&valor=17.00",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"api",
+										"v1",
+										"transacao",
+										"converte-cambio"
+									],
+									"query": [
+										{
+											"key": "moedaOrigem",
+											"value": "BRL"
+										},
+										{
+											"key": "moedaDestino",
+											"value": "USD"
+										},
+										{
+											"key": "valor",
+											"value": "17.00"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TRANSFERENCIA",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"idContaOrigem\": 2,\n  \"idContaDestino\": 4,\n  \"tipoTransacaoFinanceira\": \"TRANSFERENCIA\",\n  \"valorTransacao\": 100.00,\n  \"taxaCambio\": 5.00,\n  \"tipoDespesa\": \"OUTROS\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/v1/transacao/transferencia"
+							},
+							"response": []
+						},
+						{
+							"name": "DEPOSITO",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"idContaOrigem\": 1,\n  \"valorTransacao\": 1000.00\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/v1/transacao/deposito"
+							},
+							"response": []
+						},
+						{
+							"name": "PAGAMENTO",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"idContaOrigem\": 2,\n  \"idContaDestino\": 4,\n  \"tipoTransacaoFinanceira\": \"RETIRADA\",\n  \"valorTransacao\": 1000.00,\n  \"taxaCambio\": 5.00,\n  \"tipoDespesa\": \"OUTROS\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/v1/transacao/pagamento"
+							},
+							"response": []
+						},
+						{
+							"name": "SAQUE",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"followRedirects": true,
+								"disableUrlEncoding": false,
+								"disableCookies": false
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_bank}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "User-Agent",
+										"value": "insomnia/10.1.1"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"idContaOrigem\": 1,\n\t\"idContaDestino\": null,\n\t\"tipoTransacaoFinanceira\": \"RETIRADA\",\n\t\"valorTransacao\": 50.00,\n\t\"taxaCambio\": 5.00,\n\t\"tipoDespesa\": \"OUTROS\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:8080/api/v1/transacao/saque"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

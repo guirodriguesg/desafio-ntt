@@ -36,14 +36,14 @@ public class ContaController {
     }
 
     @GetMapping
-    private Page<ContaResponse> buscarContaPorCliente(@PageableDefault(sort = {"idUsuario"}) Pageable pageable) {
-        log.info("Buscando conta");
+    private Page<ContaResponse> buscarContaPorCliente(@PageableDefault(sort = {"usuario.id"}) Pageable pageable) {
+        log.info("Buscando todas as contas");
         return contaService.getAllContas(pageable).map(contaMapper::toContaResponse);
     }
 
     @GetMapping("/{id}")
     private ResponseEntity<List<ContaResponse>> buscarContaPorCliente(@PathVariable(value = "id") @NotNull Long idCliente) {
-        log.info("Buscando conta");
+        log.info("Buscando conta por id {}", idCliente);
         return ResponseEntity.ok(contaService.getContaByIdCliente(idCliente).stream().map(contaMapper::toContaResponse).toList());
     }
 
@@ -55,7 +55,7 @@ public class ContaController {
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<ContaResponse> atualizarConta(@PathVariable(value = "id") @NotNull Long idConta, @RequestBody @NotNull @Valid ContaRequest contaRequest) {
+    private ResponseEntity<ContaResponse> atualizarConta(@PathVariable(value = "id") @NotNull Long idConta, @RequestBody @NotNull ContaRequest contaRequest) {
         log.info("Atualizando conta");
         return contaService.updateConta(idConta, contaRequest).map(contaMapper::toContaResponse).map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
@@ -72,9 +72,4 @@ public class ContaController {
         return ResponseEntity.ok(contaService.saldoAtualbyMockApi(moedaOrigem));
     }
 
-
-    //
-//                .map(regimeTituloMapper::toResponse)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
 }

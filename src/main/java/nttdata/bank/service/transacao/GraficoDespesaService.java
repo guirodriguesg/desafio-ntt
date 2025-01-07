@@ -1,6 +1,7 @@
 package nttdata.bank.service.transacao;
 
 import nttdata.bank.domain.entities.transacao.TipoDespesaEnum;
+import nttdata.bank.handlers.ArquivoException;
 import nttdata.bank.service.GraficoStrategy;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
@@ -18,6 +19,7 @@ import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Optional;
 
+import static nttdata.bank.utils.ConstatesUtils.INTERNAL_SERVER_ERROR;
 import static nttdata.bank.utils.ConstatesUtils.R_SIFRAO;
 
 @Component
@@ -53,7 +55,7 @@ public class GraficoDespesaService implements GraficoStrategy {
             ChartUtils.writeChartAsPNG(baos, chart, 800, 600);
             return baos;
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao gerar gráfico de despesas");
+            throw new ArquivoException("Erro ao gerar gráfico de despesas", INTERNAL_SERVER_ERROR);
         }
     }
 }
